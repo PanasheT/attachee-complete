@@ -15,6 +15,14 @@ export function validateUpdate<T>(model: T, update: Partial<T>): Partial<T> {
   return validated;
 }
 
+export function areDatesTheSame(D1: Date, D2: Date): boolean {
+  return (
+    D1.getFullYear() === D2.getFullYear() &&
+    D1.getMonth() === D2.getMonth() &&
+    D1.getDate() === D2.getDate()
+  );
+}
+
 export function getStartAndEndOfDate(arg: Date): {
   startOfLogDate: Date;
   endOfLogDate: Date;

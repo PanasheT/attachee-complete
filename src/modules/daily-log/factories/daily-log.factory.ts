@@ -1,7 +1,7 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StudentEntity } from 'src/modules/student/entities';
-import { getStartAndEndOfDate } from 'src/util';
+import { areDatesTheSame, getStartAndEndOfDate } from 'src/util';
 import { Between, Repository } from 'typeorm';
 import { CreateDailyLogDto } from '../dtos';
 import { DailyLogEntity } from '../entities';
@@ -17,30 +17,25 @@ export class DailyLogFactory {
     model: Omit<CreateDailyLogDto, 'studentUUID'>,
     student: StudentEntity
   ): Promise<DailyLogEntity> {
-    this.assertDailyLogDateIsValid(model.checkIn, model.checkOut);
+    this.assertDatesAreValid(model.checkIn, model.checkOut);
     await this.assertDailyLogDailyLimit(model.checkIn, student.uuid);
 
     return Object.assign(new DailyLogEntity(), { student, ...model });
   }
 
-  private assertDailyLogDateIsValid(checkIn: Date, checkOut: Date): void {
+  private assertDatesAreValid(checkIn: Date, checkOut: Date): void {
+    if (!areDatesTheSame(checkIn, checkOut)) {
+      throw new NotAcceptableException(
+        'Check in and check out must be the same date.'
+      );
+    }
+
     if (checkIn >= checkOut) {
       throw new NotAcceptableException('Check out comes after check in.');
     }
 
     if (new Date() < checkOut) {
       throw new NotAcceptableException('Future daily logs are unacceptable.');
-    }
-
-    const areDatesTheSame: boolean =
-      checkIn.getFullYear() === checkOut.getFullYear() &&
-      checkIn.getMonth() === checkOut.getMonth() &&
-      checkIn.getDate() === checkOut.getDate();
-
-    if (!areDatesTheSame) {
-      throw new NotAcceptableException(
-        'Check in and check out must be the same date.'
-      );
     }
   }
 
