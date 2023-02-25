@@ -22,7 +22,7 @@ export class StudentEntity extends AbstractEntity {
   lastName: string;
 
   @Column()
-  courseCode: string;
+  programmeCode: string;
 
   @Column()
   university: string;
