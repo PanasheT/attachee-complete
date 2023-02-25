@@ -17,7 +17,7 @@ export class ProjectFactory {
     student: StudentEntity
   ): Promise<ProjectEntity> {
     await this.assertProjectExists(model.name, student.uuid);
-    return Object.assign(new ProjectEntity(), model);
+    return Object.assign(new ProjectEntity(), { ...model, student });
   }
 
   private async assertProjectExists(
