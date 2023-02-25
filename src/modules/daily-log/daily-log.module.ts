@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Daily-logController } from './controllers';
-import { Daily-logService } from './services';
-import { Daily-logEntity } from './entities';
+import { DailyLogController } from './controllers';
+import { DailyLogEntity } from './entities';
+import { DailyLogService } from './services';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Daily-logEntity])],
-    controllers: [Daily-logController],
-    exports: [Daily-logService],
-    providers: [Daily-logService],
+  imports: [TypeOrmModule.forFeature([DailyLogEntity])],
+  controllers: [DailyLogController],
+  exports: [DailyLogService],
+  providers: [DailyLogService],
 })
-export class Daily-logModule {}
+export class DailyLogModule {}

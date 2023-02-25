@@ -1,6 +1,5 @@
-import { Entity } from 'typeorm';
 import { AbstractEntity } from 'src/common';
-
+import { Entity } from 'typeorm';
 
 @Entity({ name: 'daily-log' })
-export class Daily-logEntity extends AbstractEntity {}
+export class DailyLogEntity extends AbstractEntity {}

@@ -1,9 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Daily-logService } from '../services';
+import { DailyLogService } from '../services';
 
 @Controller('daily-logs')
 @ApiTags('daily-logs')
-export class Daily-logController {
-    constructor(private readonly service: Daily-logService) {}
+export class DailyLogController {
+  constructor(private readonly service: DailyLogService) {}
 }

@@ -1,1 +1,1 @@
-export class CreateDaily-logDto {}
+export class CreateDailyLogDto {}
