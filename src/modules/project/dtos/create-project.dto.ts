@@ -5,10 +5,15 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  IsUUID,
 } from 'class-validator';
 import { ProjectStatus } from '../entities';
 
 export class CreateProjectDto {
+  @IsUUID()
+  @IsNotEmpty()
+  readonly studentUUID: string;
+
   @IsString()
   @IsNotEmpty()
   readonly name: string;
