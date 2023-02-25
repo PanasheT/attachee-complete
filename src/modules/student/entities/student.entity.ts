@@ -1,5 +1,6 @@
 import { AbstractEntity } from 'src/common';
 import { DailyLogEntity } from 'src/modules/daily-log/entities';
+import { ProjectEntity } from 'src/modules/project/entities';
 import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity({ name: 'student' })
@@ -36,4 +37,7 @@ export class StudentEntity extends AbstractEntity {
     (dailyLog: DailyLogEntity) => dailyLog.student
   )
   dailyLogs: DailyLogEntity[];
+
+  @OneToMany(() => ProjectEntity, (project: ProjectEntity) => project.student)
+  projects: ProjectEntity[];
 }

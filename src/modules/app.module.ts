@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DB_CONFIG } from 'src/common';
 import { DailyLogModule } from './daily-log/daily-log.module';
+import { ProjectModule } from './project/project.module';
 import { StudentModule } from './student/student.module';
 
 @Module({
@@ -14,6 +15,7 @@ import { StudentModule } from './student/student.module';
     TypeOrmModule.forRootAsync(DB_CONFIG),
     StudentModule,
     DailyLogModule,
+    ProjectModule,
   ],
 })
 export class AppModule {}
