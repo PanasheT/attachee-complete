@@ -1,22 +1,33 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CreateStudentDto } from '../dtos';
 import { StudentEntity } from '../entities';
+import { StudentFactory } from '../factories';
 import {
   FindStudentQuery,
-  StudentIdentificationProperties,
+  StudentIdentificationProperties as StudentIdProps,
 } from '../types/student.types';
 
 @Injectable()
 export class StudentService {
+  private logger = new Logger(StudentService.name);
+
   constructor(
     @InjectRepository(StudentEntity)
-    private readonly repo: Repository<StudentEntity>
+    private readonly repo: Repository<StudentEntity>,
+    private readonly factory: StudentFactory
   ) {}
 
   public async findOneStudent(
     value: string,
-    property: StudentIdentificationProperties
+    property: StudentIdProps
   ): Promise<StudentEntity> {
     const query: FindStudentQuery = this.generateStudentQuery(value, property);
     return query ? await this.repo.findOneBy(query) : undefined;
@@ -24,7 +35,7 @@ export class StudentService {
 
   public async findOneStudentOrFail(
     value: string,
-    property: StudentIdentificationProperties
+    property: StudentIdProps
   ): Promise<StudentEntity> {
     try {
       const query: FindStudentQuery = this.generateStudentQuery(
@@ -43,9 +54,36 @@ export class StudentService {
 
   private generateStudentQuery(
     value: string,
-    property: StudentIdentificationProperties,
+    property: StudentIdProps,
     deleted: boolean = false
   ): FindStudentQuery {
     return { [property]: value, deleted };
+  }
+
+  public async createStudent(model: CreateStudentDto): Promise<StudentEntity> {
+    return await this.handleStudentSave(
+      await this.getStudentFromFactory(model)
+    );
+  }
+
+  private async getStudentFromFactory(
+    model: CreateStudentDto
+  ): Promise<StudentEntity> {
+    try {
+      return await this.factory.createStudent(model);
+    } catch (error) {
+      throw new HttpException(error?.message, error?.status);
+    }
+  }
+
+  private async handleStudentSave(
+    model: StudentEntity
+  ): Promise<StudentEntity> {
+    try {
+      return await this.repo.save(model);
+    } catch (error) {
+      this.logger.error(error?.message || error);
+      throw new InternalServerErrorException('Failed to create student.');
+    }
   }
 }
