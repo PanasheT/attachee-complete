@@ -1,5 +1,6 @@
 import { AbstractEntity } from 'src/common';
-import { Column, Entity } from 'typeorm';
+import { DailyLogEntity } from 'src/modules/daily-log/entities';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity({ name: 'student' })
 export class StudentEntity extends AbstractEntity {
@@ -29,4 +30,10 @@ export class StudentEntity extends AbstractEntity {
 
   @Column()
   password: string;
+
+  @OneToMany(
+    () => DailyLogEntity,
+    (dailyLog: DailyLogEntity) => dailyLog.student
+  )
+  logs: DailyLogEntity[];
 }
