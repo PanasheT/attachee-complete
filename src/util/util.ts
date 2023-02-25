@@ -14,3 +14,21 @@ export function validateUpdate<T>(model: T, update: Partial<T>): Partial<T> {
 
   return validated;
 }
+
+export function getStartAndEndOfDate(arg: Date): {
+  startOfLogDate: Date;
+  endOfLogDate: Date;
+} {
+  return {
+    startOfLogDate: new Date(arg.getFullYear(), arg.getMonth(), arg.getDate()),
+    endOfLogDate: new Date(
+      arg.getFullYear(),
+      arg.getMonth(),
+      arg.getDate(),
+      23,
+      59,
+      59,
+      999
+    ),
+  };
+}
