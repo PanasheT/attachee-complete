@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateStudentDto } from '../dtos';
+import { CreateStudentDto, UpdateStudentDto } from '../dtos';
 import { StudentEntity } from '../entities';
 import { StudentFactory } from '../factories';
 import {
@@ -84,6 +84,31 @@ export class StudentService {
     } catch (error) {
       this.logger.error(error?.message || error);
       throw new InternalServerErrorException('Failed to create student.');
+    }
+  }
+
+  public async updateStudent(
+    uuid: string,
+    model: UpdateStudentDto
+  ): Promise<StudentEntity> {
+    const student: StudentEntity = await this.findOneStudentOrFail(
+      uuid,
+      'uuid'
+    );
+
+    return await this.handleStudentSave(
+      await this.getUpdatedStudentFromFactory(model, student)
+    );
+  }
+
+  private async getUpdatedStudentFromFactory(
+    model: UpdateStudentDto,
+    student: StudentEntity
+  ): Promise<StudentEntity> {
+    try {
+      return await this.factory.updateStudent(model, student);
+    } catch (error) {
+      throw new HttpException(error?.message, error?.status);
     }
   }
 }

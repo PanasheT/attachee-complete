@@ -30,11 +30,7 @@ export class StudentFactory {
       model.phone && { phone: model.phone, deleted },
     ].filter(Boolean);
 
-    if (!query.length) {
-      return;
-    }
-
-    if (await this.repo.findOneBy(query)) {
+    if (query.length && (await this.repo.findOneBy(query))) {
       throw new BadRequestException('Student already exists.');
     }
   }
