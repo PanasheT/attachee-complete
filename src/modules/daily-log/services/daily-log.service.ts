@@ -22,15 +22,19 @@ export class DailyLogService {
   ) {}
 
   public async findOneDailyLog(uuid: string): Promise<DailyLogEntity> {
-    return await this.repo.findOneBy({ uuid });
+    return await this.repo.findOneBy({ uuid, deleted: false });
   }
 
   public async findOneDailyLogOrFail(uuid: string): Promise<DailyLogEntity> {
     try {
-      return await this.repo.findOneByOrFail({ uuid });
+      return await this.repo.findOneByOrFail({ uuid, deleted: false });
     } catch {
       throw new NotFoundException('Daily log not found.');
     }
+  }
+
+  public async findAllDailyLogs(): Promise<DailyLogEntity[]> {
+    return await this.repo.findBy({ deleted: false });
   }
 
   public async createDailyLog(

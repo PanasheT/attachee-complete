@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -9,6 +10,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiCreatedResponse,
+  ApiFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -38,6 +40,32 @@ export class DailyLogController {
     @Body() model: CreateDailyLogDto
   ): Promise<DailyLogDto> {
     const dailyLog: DailyLogEntity = await this.service.createDailyLog(model);
+    return DailyLogDtoFactory(dailyLog);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Retrieve all daily logs.' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Daily logs successfully retrieved.',
+    type: [DailyLogDto],
+  })
+  public async findAllDailyLogs(): Promise<DailyLogDto[]> {
+    const dailyLogs = await this.service.findAllDailyLogs();
+    return dailyLogs.map(DailyLogDtoFactory);
+  }
+
+  @Get(':uuid')
+  @ApiOperation({ summary: 'Retrieve a specific daily log by uuid.' })
+  @HttpCode(HttpStatus.FOUND)
+  @ApiFoundResponse({
+    description: 'Daily log successfully retrieved.',
+    type: DailyLogDto,
+  })
+  public async findOneDailyLog(
+    @Param('uuid') uuid: string
+  ): Promise<DailyLogDto> {
+    const dailyLog = await this.service.findOneDailyLogOrFail(uuid);
     return DailyLogDtoFactory(dailyLog);
   }
 
