@@ -55,7 +55,7 @@ export class StudentService {
   private generateStudentQuery(
     value: string,
     property: StudentIdProps,
-    deleted: boolean = false
+    deleted = false
   ): FindStudentQuery {
     return { [property]: value, deleted };
   }

@@ -2,7 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProjectEntity } from '../entities';
-import { FindProjectQuery, ProjectIdentificationProperties } from '../types';
+import {
+  FindProjectQuery,
+  ProjectIdentificationProperties as ProjectIdProps,
+} from '../types';
 
 @Injectable()
 export class ProjectService {
@@ -13,7 +16,7 @@ export class ProjectService {
 
   public async findOneProject(
     value: string,
-    property: ProjectIdentificationProperties
+    property: ProjectIdProps
   ): Promise<ProjectEntity> {
     const query: FindProjectQuery = this.generateFindQuery(value, property);
     return query ? await this.repo.findOneBy(query) : undefined;
@@ -25,7 +28,7 @@ export class ProjectService {
 
   public async findOneProjectOrFail(
     value: string,
-    property: ProjectIdentificationProperties
+    property: ProjectIdProps
   ): Promise<ProjectEntity> {
     try {
       const query: FindProjectQuery = this.generateFindQuery(value, property);
@@ -37,8 +40,8 @@ export class ProjectService {
 
   private generateFindQuery(
     value: string,
-    property: ProjectIdentificationProperties,
-    deleted: boolean = false
+    property: ProjectIdProps,
+    deleted = false
   ): FindProjectQuery {
     return { [property]: value, deleted };
   }

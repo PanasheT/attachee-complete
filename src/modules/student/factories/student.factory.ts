@@ -23,7 +23,7 @@ export class StudentFactory {
     email?: string;
     phone?: string;
   }): Promise<void> {
-    const deleted: boolean = false;
+    const deleted = false;
     const query: FindStudentQuery[] = [
       model.regNumber && { regNumber: model.regNumber, deleted },
       model.email && { email: model.email, deleted },
