@@ -77,7 +77,7 @@ export class DailyLogFactory {
     } else if (checkIn && !checkOut) {
       this.assertDatesAreValid(checkIn, dailyLog.checkOut);
     } else if (checkOut && !checkIn) {
-      this.assertDatesAreValid(checkOut, dailyLog.checkIn);
+      this.assertDatesAreValid(dailyLog.checkIn, checkOut);
     }
 
     return Object.assign(dailyLog, validatedDto);
