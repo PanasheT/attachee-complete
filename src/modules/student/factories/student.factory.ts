@@ -1,8 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { validateUpdate } from 'src/util';
 import { Repository } from 'typeorm';
-import { CreateStudentDto } from '../dtos';
+import { CreateStudentDto, UpdateStudentDto } from '../dtos';
 import { StudentEntity } from '../entities';
+import { FindStudentQuery } from '../types/student.types';
 
 @Injectable()
 export class StudentFactory {
@@ -16,20 +18,33 @@ export class StudentFactory {
     return Object.assign(new StudentEntity(), model);
   }
 
-  private async assertStudentExists({
-    regNumber,
-    email,
-    phone,
-  }: CreateStudentDto): Promise<void> {
+  private async assertStudentExists(model: {
+    regNumber?: string;
+    email?: string;
+    phone?: string;
+  }): Promise<void> {
     const deleted: boolean = false;
-    const query = [
-      { regNumber, deleted },
-      { email, deleted },
-      { phone, deleted },
-    ];
+    const query: FindStudentQuery[] = [
+      model.regNumber && { regNumber: model.regNumber, deleted },
+      model.email && { email: model.email, deleted },
+      model.phone && { phone: model.phone, deleted },
+    ].filter(Boolean);
+
+    if (!query.length) {
+      return;
+    }
 
     if (await this.repo.findOneBy(query)) {
       throw new BadRequestException('Student already exists.');
     }
+  }
+
+  public async updateStudent(
+    model: UpdateStudentDto,
+    student: StudentEntity
+  ): Promise<StudentEntity> {
+    const validatedDto: UpdateStudentDto = validateUpdate(student, model);
+    await this.assertStudentExists(model);
+    return Object.assign(student, validatedDto);
   }
 }
