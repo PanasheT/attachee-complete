@@ -35,5 +35,5 @@ export class StudentEntity extends AbstractEntity {
     () => DailyLogEntity,
     (dailyLog: DailyLogEntity) => dailyLog.student
   )
-  logs: DailyLogEntity[];
+  dailyLogs: DailyLogEntity[];
 }
