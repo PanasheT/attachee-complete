@@ -6,14 +6,21 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
 } from '@nestjs/common';
 import {
   ApiCreatedResponse,
+  ApiFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreateStudentDto, StudentDto, StudentDtoFactory } from '../dtos';
+import {
+  CreateStudentDto,
+  StudentDto,
+  StudentDtoFactory,
+  UpdateStudentDto,
+} from '../dtos';
 import { StudentService } from '../services';
 
 @Controller('students')
@@ -50,7 +57,7 @@ export class StudentController {
   @Get(':uuid')
   @ApiOperation({ summary: 'Retrieve a specific student by uuid.' })
   @HttpCode(HttpStatus.FOUND)
-  @ApiOkResponse({
+  @ApiFoundResponse({
     description: 'Student successfully retrieved.',
     type: StudentDto,
   })
@@ -58,6 +65,21 @@ export class StudentController {
     @Param('uuid') uuid: string
   ): Promise<StudentDto> {
     const student = await this.service.findOneStudentOrFail(uuid, 'uuid');
+    return StudentDtoFactory(student);
+  }
+
+  @Put(':uuid')
+  @ApiOperation({ summary: 'Update a specific student by uuid.' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Student updated successfully.',
+    type: StudentDto,
+  })
+  public async updateStudent(
+    @Param('uuid') uuid: string,
+    @Body() model: UpdateStudentDto
+  ): Promise<StudentDto> {
+    const student = await this.service.updateStudent(uuid, model);
     return StudentDtoFactory(student);
   }
 }
