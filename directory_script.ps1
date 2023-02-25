@@ -38,6 +38,8 @@ $factoryBoilerplate = @"
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ${cModuleName}Entity } from '../entities';
+
 
 @Injectable()
 export class ${cModuleName}Factory {
