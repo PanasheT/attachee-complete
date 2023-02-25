@@ -1,9 +1,13 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StudentEntity } from 'src/modules/student/entities';
-import { areDatesTheSame, getStartAndEndOfDate } from 'src/util';
+import {
+  areDatesTheSame,
+  getStartAndEndOfDate,
+  validateUpdate,
+} from 'src/util';
 import { Between, Repository } from 'typeorm';
-import { CreateDailyLogDto } from '../dtos';
+import { CreateDailyLogDto, UpdateDailyLogDto } from '../dtos';
 import { DailyLogEntity } from '../entities';
 
 @Injectable()
@@ -55,5 +59,27 @@ export class DailyLogFactory {
         'Maximum of Five (5) Daily Logs per day.'
       );
     }
+  }
+
+  public async updateDailyLog(
+    model: UpdateDailyLogDto,
+    dailyLog: DailyLogEntity
+  ): Promise<DailyLogEntity> {
+    const validatedDto: Partial<DailyLogEntity> = validateUpdate(
+      dailyLog,
+      model
+    );
+
+    const { checkIn, checkOut } = validatedDto;
+
+    if (checkIn && checkOut) {
+      this.assertDatesAreValid(checkIn, checkOut);
+    } else if (checkIn && !checkOut) {
+      this.assertDatesAreValid(checkIn, dailyLog.checkOut);
+    } else if (checkOut && !checkIn) {
+      this.assertDatesAreValid(checkOut, dailyLog.checkIn);
+    }
+
+    return Object.assign(dailyLog, validatedDto);
   }
 }
