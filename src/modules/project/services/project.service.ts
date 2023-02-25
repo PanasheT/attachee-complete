@@ -1,7 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { StudentEntity } from 'src/modules/student/entities';
+import { StudentService } from 'src/modules/student/services';
 import { Repository } from 'typeorm';
+import { CreateProjectDto } from '../dtos';
 import { ProjectEntity } from '../entities';
+import { ProjectFactory } from '../factories';
 import {
   FindProjectQuery,
   ProjectIdentificationProperties as ProjectIdProps,
@@ -11,7 +20,9 @@ import {
 export class ProjectService {
   constructor(
     @InjectRepository(ProjectEntity)
-    private readonly repo: Repository<ProjectEntity>
+    private readonly repo: Repository<ProjectEntity>,
+    private readonly factory: ProjectFactory,
+    private readonly studentService: StudentService
   ) {}
 
   public async findOneProject(
@@ -44,5 +55,38 @@ export class ProjectService {
     deleted = false
   ): FindProjectQuery {
     return { [property]: value, deleted };
+  }
+
+  public async createProject({
+    studentUUID,
+    ...model
+  }: CreateProjectDto): Promise<ProjectEntity> {
+    const student: StudentEntity =
+      await this.studentService.findOneStudentOrFail(studentUUID, 'uuid');
+
+    return await this.handleProjectSave(
+      await this.getProjectFromFactory(model, student)
+    );
+  }
+
+  private async getProjectFromFactory(
+    model: Omit<CreateProjectDto, 'studentUUID'>,
+    student: StudentEntity
+  ): Promise<ProjectEntity> {
+    try {
+      return await this.factory.createProject(model, student);
+    } catch (error) {
+      throw new HttpException(error?.message, error?.status);
+    }
+  }
+
+  private async handleProjectSave(
+    model: ProjectEntity
+  ): Promise<ProjectEntity> {
+    try {
+      return await this.repo.save(model);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to create project.');
+    }
   }
 }
