@@ -78,7 +78,7 @@ export class GitCommitService {
     });
   }
 
-  public async createDailyLog({
+  public async createGitCommit({
     dailyLogUUID,
     ...model
   }: CreateGitCommitDto): Promise<GitCommitEntity> {
