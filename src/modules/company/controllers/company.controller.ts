@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -9,6 +10,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiCreatedResponse,
+  ApiFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -39,6 +41,32 @@ export class CompanyController {
   ): Promise<CompanyDto> {
     const company: CompanyEntity = await this.service.createCompany(model);
 
+    return CompanyDtoFactory(company);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Retrieve all companies.' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Companys successfully retrieved.',
+    type: [CompanyDto],
+  })
+  public async findAllCompanies(): Promise<CompanyDto[]> {
+    const companies = await this.service.findAllCompanies();
+    return companies.map(CompanyDtoFactory);
+  }
+
+  @Get(':uuid')
+  @ApiOperation({ summary: 'Retrieve a specific company by uuid.' })
+  @HttpCode(HttpStatus.FOUND)
+  @ApiFoundResponse({
+    description: 'Company successfully retrieved.',
+    type: CompanyDto,
+  })
+  public async findOneCompany(
+    @Param('uuid') uuid: string
+  ): Promise<CompanyDto> {
+    const company = await this.service.findOneCompanyOrFail(uuid, 'uuid');
     return CompanyDtoFactory(company);
   }
 
