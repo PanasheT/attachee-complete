@@ -13,7 +13,7 @@ export class GitCommitEntity extends AbstractEntity {
   @ManyToOne(
     () => DailyLogEntity,
     (dailyLog: DailyLogEntity) => dailyLog.gitCommits,
-    { nullable: true }
+    { nullable: true, eager: true }
   )
   @JoinColumn()
   dailyLog: DailyLogEntity;

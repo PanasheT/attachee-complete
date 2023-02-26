@@ -41,7 +41,7 @@ export class GitCommitFactory {
       model
     );
 
-    if (gitCommit?.commitHash) {
+    if (validatedDto?.commitHash) {
       await this.assertGitCommitExists(gitCommit.commitHash);
     }
 
