@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import {
@@ -15,7 +16,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreateGitCommitDto } from '../dtos';
+import { CreateGitCommitDto, UpdateGitCommitDto } from '../dtos';
 import { GitCommitDto, GitCommitDtoFactory } from '../dtos/git-commit.dto';
 import { GitCommitEntity } from '../entities';
 import { GitCommitService } from '../services';
@@ -65,6 +66,23 @@ export class GitCommitController {
   ): Promise<GitCommitDto> {
     const gitCommit = await this.service.findOneGitCommitOrFail(uuid, 'uuid');
     return GitCommitDtoFactory(gitCommit);
+  }
+
+  @Put(':uuid')
+  @ApiOperation({ summary: 'Update a specific git commit by uuid.' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Git commit updated successfully.',
+    type: GitCommitDto,
+  })
+  public async updateGitCommit(
+    @Param('uuid') uuid: string,
+    @Body() model: UpdateGitCommitDto
+  ): Promise<GitCommitDto> {
+    const updatedGitCommit: GitCommitEntity =
+      await this.service.updateGitCommit(uuid, model);
+
+    return GitCommitDtoFactory(updatedGitCommit);
   }
 
   @Get('student')

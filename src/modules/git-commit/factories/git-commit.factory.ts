@@ -1,8 +1,9 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DailyLogEntity } from 'src/modules/daily-log/entities';
+import { validateUpdate } from 'src/util';
 import { Repository } from 'typeorm';
-import { CreateGitCommitDto } from '../dtos';
+import { CreateGitCommitDto, UpdateGitCommitDto } from '../dtos';
 import { GitCommitEntity } from '../entities';
 
 @Injectable()
@@ -29,5 +30,21 @@ export class GitCommitFactory {
     if (gitCommit) {
       throw new NotAcceptableException('Git commit already exists.');
     }
+  }
+
+  public async updateGitCommit(
+    model: UpdateGitCommitDto,
+    gitCommit: GitCommitEntity
+  ): Promise<GitCommitEntity> {
+    const validatedDto: Partial<GitCommitEntity> = validateUpdate(
+      gitCommit,
+      model
+    );
+
+    if (gitCommit?.commitHash) {
+      await this.assertGitCommitExists(gitCommit.commitHash);
+    }
+
+    return Object.assign(gitCommit, validatedDto);
   }
 }

@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DailyLogEntity } from 'src/modules/daily-log/entities';
 import { DailyLogService } from 'src/modules/daily-log/services';
 import { Repository } from 'typeorm';
-import { CreateGitCommitDto } from '../dtos';
+import { CreateGitCommitDto, UpdateGitCommitDto } from '../dtos';
 import { GitCommitEntity } from '../entities';
 import { GitCommitFactory } from '../factories';
 import {
@@ -109,6 +109,31 @@ export class GitCommitService {
     } catch (error) {
       this.logger.error(error?.message || error);
       throw new InternalServerErrorException('Failed to create git commit.');
+    }
+  }
+
+  public async updateGitCommit(
+    uuid: string,
+    model: UpdateGitCommitDto
+  ): Promise<GitCommitEntity> {
+    const gitCommit: GitCommitEntity = await this.findOneGitCommitOrFail(
+      uuid,
+      'uuid'
+    );
+
+    return await this.handleGitCommitSave(
+      await this.getUpdatedGitCommitFromFactory(model, gitCommit)
+    );
+  }
+
+  private async getUpdatedGitCommitFromFactory(
+    model: UpdateGitCommitDto,
+    gitCommit: GitCommitEntity
+  ): Promise<GitCommitEntity> {
+    try {
+      return await this.factory.updateGitCommit(model, gitCommit);
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
     }
   }
 }
