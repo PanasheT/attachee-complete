@@ -1,7 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CreateCompanyDto } from '../dtos';
 import { CompanyEntity } from '../entities';
+import { CompanyFactory } from '../factories';
 import {
   CompanyIdentificationProperties,
   FindCompanyQuery,
@@ -9,9 +17,12 @@ import {
 
 @Injectable()
 export class CompanyService {
+  private logger = new Logger(CompanyService.name);
+
   constructor(
     @InjectRepository(CompanyEntity)
-    private readonly repo: Repository<CompanyEntity>
+    private readonly repo: Repository<CompanyEntity>,
+    private readonly factory: CompanyFactory
   ) {}
 
   public async findOneCompany(
@@ -44,5 +55,32 @@ export class CompanyService {
     deleted: boolean = false
   ): FindCompanyQuery {
     return { [property]: value, deleted };
+  }
+
+  public async createCompany(model: CreateCompanyDto): Promise<CompanyEntity> {
+    return await this.handleCompanySave(
+      await this.getCompanyFromFactory(model)
+    );
+  }
+
+  private async getCompanyFromFactory(
+    model: CreateCompanyDto
+  ): Promise<CompanyEntity> {
+    try {
+      return await this.factory.createCompany(model);
+    } catch (error) {
+      throw new HttpException(error?.message, error?.status);
+    }
+  }
+
+  private async handleCompanySave(
+    model: CompanyEntity
+  ): Promise<CompanyEntity> {
+    try {
+      return await this.repo.save(model);
+    } catch (error) {
+      this.logger.error(error?.message || error);
+      throw new InternalServerErrorException('Failed to create company');
+    }
   }
 }
