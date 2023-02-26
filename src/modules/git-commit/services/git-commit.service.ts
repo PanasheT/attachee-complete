@@ -1,30 +1,42 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { DailyLogEntity } from 'src/modules/daily-log/entities';
+import { DailyLogService } from 'src/modules/daily-log/services';
 import { Repository } from 'typeorm';
+import { CreateGitCommitDto } from '../dtos';
 import { GitCommitEntity } from '../entities';
 import {
   FindGitCommitQuery,
-  GitCommitIdentificationProperties,
+  GitCommitIdentificationProperties as GitCommitIdProps,
 } from '../types';
 
 @Injectable()
 export class GitCommitService {
   constructor(
     @InjectRepository(GitCommitEntity)
-    private readonly repo: Repository<GitCommitEntity>
+    private readonly repo: Repository<GitCommitEntity>,
+    private readonly dailyLogService: DailyLogService
   ) {}
 
   public async findOneGitCommit(
     value: string,
-    property: GitCommitIdentificationProperties
+    property: GitCommitIdProps
   ): Promise<GitCommitEntity> {
     const query: FindGitCommitQuery = this.generateFindQuery(value, property);
     return query ? await this.repo.findOneBy(query) : undefined;
   }
 
+  private generateFindQuery(
+    value: string,
+    property: GitCommitIdProps,
+    deleted: boolean = false
+  ): FindGitCommitQuery {
+    return { [property]: value, deleted };
+  }
+
   public async findOneGitCommitOrFail(
     value: string,
-    property: GitCommitIdentificationProperties
+    property: GitCommitIdProps
   ): Promise<GitCommitEntity> {
     try {
       const query: FindGitCommitQuery = this.generateFindQuery(value, property);
@@ -57,11 +69,13 @@ export class GitCommitService {
     });
   }
 
-  private generateFindQuery(
-    value: string,
-    property: GitCommitIdentificationProperties,
-    deleted: boolean = false
-  ): FindGitCommitQuery {
-    return { [property]: value, deleted };
+  public async createDailyLog({
+    dailyLogUUID,
+    ...model
+  }: CreateGitCommitDto): Promise<GitCommitEntity> {
+    const dailyLog: DailyLogEntity =
+      await this.dailyLogService.findOneDailyLogOrFail(dailyLogUUID);
+
+    return;
   }
 }
