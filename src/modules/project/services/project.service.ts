@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { StudentEntity } from 'src/modules/student/entities';
 import { StudentService } from 'src/modules/student/services';
 import { Repository } from 'typeorm';
-import { CreateProjectDto } from '../dtos';
+import { CreateProjectDto, UpdateProjectDto } from '../dtos';
 import { ProjectEntity } from '../entities';
 import { ProjectFactory } from '../factories';
 import {
@@ -87,6 +87,31 @@ export class ProjectService {
       return await this.repo.save(model);
     } catch (error) {
       throw new InternalServerErrorException('Failed to create project.');
+    }
+  }
+
+  public async updateProject(
+    uuid: string,
+    model: UpdateProjectDto
+  ): Promise<ProjectEntity> {
+    const project: ProjectEntity = await this.findOneProjectOrFail(
+      uuid,
+      'uuid'
+    );
+
+    return await this.handleProjectSave(
+      await this.getUpdatedProjectFromFactory(model, project)
+    );
+  }
+
+  private async getUpdatedProjectFromFactory(
+    model: UpdateProjectDto,
+    project: ProjectEntity
+  ): Promise<ProjectEntity> {
+    try {
+      return await this.factory.updateProject(model, project);
+    } catch (error) {
+      throw new HttpException(error?.message, error?.status);
     }
   }
 }

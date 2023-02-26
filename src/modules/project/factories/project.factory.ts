@@ -1,8 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StudentEntity } from 'src/modules/student/entities';
+import { validateUpdate } from 'src/util';
 import { Repository } from 'typeorm';
-import { CreateProjectDto } from '../dtos';
+import {
+  CreateProjectDto,
+  ProjectUpdateProperties,
+  UpdateProjectDto,
+} from '../dtos';
 import { ProjectEntity } from '../entities';
 
 @Injectable()
@@ -32,5 +37,19 @@ export class ProjectFactory {
     if (project) {
       throw new BadRequestException('Project already exists.');
     }
+  }
+
+  public async updateProject(
+    model: UpdateProjectDto,
+    project: ProjectEntity
+  ): Promise<ProjectEntity> {
+    const validatedDto: Partial<Pick<ProjectEntity, ProjectUpdateProperties>> =
+      validateUpdate(project, model);
+
+    if (validatedDto.name) {
+      await this.assertProjectExists(validatedDto.name, project.student.uuid);
+    }
+
+    return Object.assign(project, validatedDto);
   }
 }
