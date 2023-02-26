@@ -1,6 +1,7 @@
 import { AbstractEntity } from 'src/common';
+import { GitCommitEntity } from 'src/modules/git-commit/entities';
 import { StudentEntity } from 'src/modules/student/entities';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity({ name: 'daily-log' })
 export class DailyLogEntity extends AbstractEntity {
@@ -26,4 +27,10 @@ export class DailyLogEntity extends AbstractEntity {
   )
   @JoinColumn()
   student: StudentEntity;
+
+  @OneToMany(
+    () => GitCommitEntity,
+    (gitCommit: GitCommitEntity) => gitCommit.dailyLog
+  )
+  gitCommits: GitCommitEntity[];
 }
