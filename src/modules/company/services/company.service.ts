@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateCompanyDto } from '../dtos';
+import { CreateCompanyDto, UpdateCompanyDto } from '../dtos';
 import { CompanyEntity } from '../entities';
 import { CompanyFactory } from '../factories';
 import {
@@ -81,6 +81,31 @@ export class CompanyService {
     } catch (error) {
       this.logger.error(error?.message || error);
       throw new InternalServerErrorException('Failed to create company');
+    }
+  }
+
+  public async updateCompany(
+    uuid: string,
+    model: UpdateCompanyDto
+  ): Promise<CompanyEntity> {
+    const company: CompanyEntity = await this.findOneCompanyOrFail(
+      uuid,
+      'uuid'
+    );
+
+    return await this.handleCompanySave(
+      await this.getUpdatedCompanyFromFactory(model, company)
+    );
+  }
+
+  private async getUpdatedCompanyFromFactory(
+    model: UpdateCompanyDto,
+    company: CompanyEntity
+  ): Promise<CompanyEntity> {
+    try {
+      return await this.factory.updateCompany(model, company);
+    } catch (error) {
+      throw new HttpException(error?.message, error?.status);
     }
   }
 }
