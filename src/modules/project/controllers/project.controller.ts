@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
 } from '@nestjs/common';
 import {
   ApiCreatedResponse,
@@ -14,7 +15,12 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreateProjectDto, ProjectDto, ProjectDtoFactory } from '../dtos';
+import {
+  CreateProjectDto,
+  ProjectDto,
+  ProjectDtoFactory,
+  UpdateProjectDto,
+} from '../dtos';
 import { ProjectEntity } from '../entities';
 import { ProjectService } from '../services';
 
@@ -61,5 +67,24 @@ export class ProjectController {
   ): Promise<ProjectDto> {
     const project = await this.service.findOneProjectOrFail(uuid, 'uuid');
     return ProjectDtoFactory(project);
+  }
+
+  @Put(':uuid')
+  @ApiOperation({ summary: 'Update a specific project by uuid.' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Project successfully updated.',
+    type: ProjectDto,
+  })
+  public async updateProject(
+    @Param('uuid') uuid: string,
+    @Body() model: UpdateProjectDto
+  ): Promise<ProjectDto> {
+    const updatedProject: ProjectEntity = await this.service.updateProject(
+      uuid,
+      model
+    );
+
+    return ProjectDtoFactory(updatedProject);
   }
 }
