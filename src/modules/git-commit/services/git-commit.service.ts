@@ -1,10 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DailyLogEntity } from 'src/modules/daily-log/entities';
 import { DailyLogService } from 'src/modules/daily-log/services';
 import { Repository } from 'typeorm';
 import { CreateGitCommitDto } from '../dtos';
 import { GitCommitEntity } from '../entities';
+import { GitCommitFactory } from '../factories';
 import {
   FindGitCommitQuery,
   GitCommitIdentificationProperties as GitCommitIdProps,
@@ -12,10 +19,12 @@ import {
 
 @Injectable()
 export class GitCommitService {
+  private logger = new Logger(GitCommitService.name);
   constructor(
     @InjectRepository(GitCommitEntity)
     private readonly repo: Repository<GitCommitEntity>,
-    private readonly dailyLogService: DailyLogService
+    private readonly dailyLogService: DailyLogService,
+    private readonly factory: GitCommitFactory
   ) {}
 
   public async findOneGitCommit(
@@ -76,6 +85,30 @@ export class GitCommitService {
     const dailyLog: DailyLogEntity =
       await this.dailyLogService.findOneDailyLogOrFail(dailyLogUUID);
 
-    return;
+    return await this.handleGitCommitSave(
+      await this.getGitCommitFromFactory(model, dailyLog)
+    );
+  }
+
+  private async getGitCommitFromFactory(
+    model: Omit<CreateGitCommitDto, 'dailyLogUUID'>,
+    dailyLog: DailyLogEntity
+  ): Promise<GitCommitEntity> {
+    try {
+      return await this.factory.createGitCommit(model, dailyLog);
+    } catch (error) {
+      throw new HttpException(error?.message, error?.status);
+    }
+  }
+
+  private async handleGitCommitSave(
+    model: GitCommitEntity
+  ): Promise<GitCommitEntity> {
+    try {
+      return await this.repo.save(model);
+    } catch (error) {
+      this.logger.error(error?.message || error);
+      throw new InternalServerErrorException('Failed to create git commit.');
+    }
   }
 }
