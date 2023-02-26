@@ -1,7 +1,8 @@
 import { AbstractEntity } from 'src/common';
+import { CompanyEntity } from 'src/modules/company/entities';
 import { DailyLogEntity } from 'src/modules/daily-log/entities';
 import { ProjectEntity } from 'src/modules/project/entities';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity({ name: 'student' })
 export class StudentEntity extends AbstractEntity {
@@ -40,4 +41,8 @@ export class StudentEntity extends AbstractEntity {
 
   @OneToMany(() => ProjectEntity, (project: ProjectEntity) => project.student)
   projects: ProjectEntity[];
+
+  @ManyToOne(() => CompanyEntity, (company: CompanyEntity) => company.students)
+  @JoinColumn()
+  company: CompanyEntity;
 }
