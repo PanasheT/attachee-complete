@@ -1,6 +1,24 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CompanyDto, CompanyDtoFactory, CreateCompanyDto } from '../dtos';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  CompanyDto,
+  CompanyDtoFactory,
+  CreateCompanyDto,
+  UpdateCompanyDto,
+} from '../dtos';
 import { CompanyEntity } from '../entities';
 import { CompanyService } from '../services';
 
@@ -22,5 +40,24 @@ export class CompanyController {
     const company: CompanyEntity = await this.service.createCompany(model);
 
     return CompanyDtoFactory(company);
+  }
+
+  @Put(':uuid')
+  @ApiOperation({ summary: 'Update a specific company by uuid.' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Company successfully updated.',
+    type: CompanyDto,
+  })
+  public async updateCompany(
+    @Param('uuid') uuid: string,
+    @Body() model: UpdateCompanyDto
+  ): Promise<CompanyDto> {
+    const updatedCompany: CompanyEntity = await this.service.updateCompany(
+      uuid,
+      model
+    );
+
+    return CompanyDtoFactory(updatedCompany);
   }
 }
