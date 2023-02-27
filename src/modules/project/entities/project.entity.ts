@@ -1,6 +1,7 @@
 import { AbstractEntity } from 'src/common';
+import { ProjectLogEntity } from 'src/modules/project-log/entities';
 import { StudentEntity } from 'src/modules/student/entities';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 export enum ProjectStatus {
   COMPLETED = 'COMPLETED',
@@ -39,4 +40,7 @@ export class ProjectEntity extends AbstractEntity {
   )
   @JoinColumn()
   student: StudentEntity;
+
+  @OneToMany(() => ProjectLogEntity, (log: ProjectLogEntity) => log.project)
+  logs: ProjectLogEntity[];
 }
