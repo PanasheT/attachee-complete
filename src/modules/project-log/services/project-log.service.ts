@@ -51,13 +51,19 @@ export class ProjectLogService {
     }
   }
 
-  public async createProjectLog(
-    model: CreateProjectLogDto
-  ): Promise<ProjectLogEntity> {
-    return;
+  public async createProjectLog({
+    projectUUID,
+    ...model
+  }: CreateProjectLogDto): Promise<ProjectLogEntity> {
+    const project: ProjectEntity =
+      await this.projectService.findOneProjectOrFail(projectUUID, 'uuid');
+
+    return await this.handleProjectLogSave(
+      await this.getProjectLogFromFactory(model, project)
+    );
   }
 
-  public getProjectLogFromFactory(
+  private getProjectLogFromFactory(
     model: Omit<CreateProjectLogDto, 'projectUUID'>,
     project: ProjectEntity
   ): ProjectLogEntity {
@@ -68,7 +74,7 @@ export class ProjectLogService {
     }
   }
 
-  public async handleProjectLogSave(
+  private async handleProjectLogSave(
     model: ProjectLogEntity
   ): Promise<ProjectLogEntity> {
     try {
