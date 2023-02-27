@@ -59,7 +59,7 @@ export class ProjectLogService {
       await this.projectService.findOneProjectOrFail(projectUUID, 'uuid');
 
     return await this.handleProjectLogSave(
-      await this.getProjectLogFromFactory(model, project)
+      this.getProjectLogFromFactory(model, project)
     );
   }
 
