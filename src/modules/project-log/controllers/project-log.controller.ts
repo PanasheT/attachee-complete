@@ -2,10 +2,12 @@ import {
   Body,
   Controller,
   Get,
+  Header,
   HttpCode,
   HttpStatus,
   Param,
   Post,
+  Res,
 } from '@nestjs/common';
 import {
   ApiCreatedResponse,
@@ -14,6 +16,9 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { Response } from 'express';
+import { PdfService } from 'src/modules/pdf/services/pdf.service';
+import { Readable } from 'stream';
 import {
   CreateProjectLogDto,
   ProjectLogDto,
@@ -25,7 +30,10 @@ import { ProjectLogService } from '../services';
 @Controller('project-logs')
 @ApiTags('project-logs')
 export class ProjectLogController {
-  constructor(private readonly service: ProjectLogService) {}
+  constructor(
+    private readonly service: ProjectLogService,
+    private readonly pdfService: PdfService
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a project log.' })
@@ -67,5 +75,33 @@ export class ProjectLogController {
   ): Promise<ProjectLogDto> {
     const projectlog = await this.service.findOneProjectLogOrFail(uuid);
     return ProjectLogDtoFactory(projectlog);
+  }
+
+  @Get(':uuid/summary')
+  @ApiOperation({ summary: 'Generate a pdf summary for a project log.' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'PDF successfully generated',
+  })
+  @Header('content-type', 'application/pdf')
+  public async generateProjectLogPdfSummary(
+    @Param('uuid') uuid: string,
+    @Res() response: Response
+  ) {
+    const projectLog: ProjectLogEntity =
+      await this.service.findOneProjectLogOrFail(uuid);
+
+    const buffer = await this.pdfService.generateProjectLogPdf(projectLog);
+    const stream = new Readable();
+
+    stream.push(buffer);
+    stream.push(null);
+
+    response.set({
+      'Content-Type': 'application/pdf',
+      'Content-Length': buffer.length,
+    });
+
+    return stream.pipe(response);
   }
 }

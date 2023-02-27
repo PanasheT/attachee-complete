@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Project Log Summary</title>
+    <style>
+      body {
+        background-color: white;
+        font-family: 'Public Sans';
+        color: black;
+        padding: 25px;
+      }
+      header {
+      }
+      .company-name {
+        font-family: 'Archivo';
+        font-weight: bolder;
+        margin-top: 10px;
+      }
+      .template-name {
+        font-weight: bolder;
+        font-size: 64px;
+        margin-bottom: 0px;
+        margin-top: 10px;
+      }
+      .student {
+        font-weight:300;
+        margin-bottom: 0px;
+        font-size: 48px;
+        margin-top: 10px;
+
+      }
+      .date {
+        font-weight:100;
+        margin-bottom: 25px;
+        font-size: 24px;
+        margin-top: 10px;
+
+      }
+      table {
+        border-collapse: collapse;
+        margin-top: 20px;
+        width: 100%;
+      }
+      th, td {
+        padding: 8px;
+        border: 1px solid black;
+      }
+      th {
+        background-color: black;
+        color: white;
+        font-weight: bold;
+      }
+      footer {
+        border: 1px solid black;
+        color: white;
+        text-align: center;
+        margin-top: 100px;
+        padding: 10px;
+        font-size: 12px;
+        background-color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="margin-bottom: 100px;">
+<svg style="width: 100%;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 377.11 52.87"><defs><style>.cls-1{font-size:48px;font-family:PublicSans-Black, Public Sans;font-weight:800;}.cls-2{letter-spacing:-0.08em;}.cls-3{letter-spacing:0em;}.cls-4{letter-spacing:-0.02em;}.cls-5,.cls-6,.cls-7{font-family:PublicSans-Medium, Public Sans;font-weight:500;}.cls-5{letter-spacing:-0.06em;}.cls-7{letter-spacing:0em;}</style></defs><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><text class="cls-1" transform="translate(0 41.35)"><tspan class="cls-2">P</tspan><tspan class="cls-3" x="28.3" y="0">AN</tspan><tspan class="cls-4" x="102.62" y="0">A</tspan><tspan class="cls-3" x="137.47" y="0">SHE</tspan><tspan class="cls-5" x="239.85" y="0">.</tspan><tspan class="cls-6" x="248.21" y="0">T</tspan><tspan class="cls-7" x="276.98" y="0">E</tspan><tspan class="cls-6" x="306.86" y="0">CH</tspan></text></g></g></svg>
+    </div>
+    <header>
+      <h1 class="company-name">Attachee.</h1>
+      <h4 class="date">{{logDate}}</h4>
+      <h2 class="template-name">Project Log Summary</h2>
+      <h2 class="student">{{regNumber}}</h2>
+    </header>
+    <table>
+      <thead>
+        <tr>
+          <th>Task Name</th>
+          <th>Description</th>
+          <th>Hours Worked</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each projectLogEntries}}
+        <tr>
+          <td>{{name}}</td>
+          <td>{{description}}</td>
+          <td>{{hoursWorked}}</td>
+          <td>{{status}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <footer>
+      by Panashe Innocent Tafuma.
+    </footer>
+  </body>
+</html>

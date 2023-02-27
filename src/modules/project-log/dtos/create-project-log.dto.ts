@@ -3,7 +3,6 @@ import {
   IsArray,
   IsDate,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
@@ -16,10 +15,6 @@ export class CreateProjectLogDto {
   @ValidateNested({ each: true })
   @Type(() => CreateTaskDto)
   tasks: CreateTaskDto[];
-
-  @IsNumber()
-  @IsNotEmpty()
-  hoursWorked: number;
 
   @IsDate()
   @IsNotEmpty()

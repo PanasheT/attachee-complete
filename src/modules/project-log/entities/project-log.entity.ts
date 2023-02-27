@@ -12,6 +12,7 @@ export type Task = {
   name: string;
   description: string;
   status: TaskStatus;
+  hoursWorked: number;
 };
 
 @Entity({ name: 'project-log' })

@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { CompanyModule } from './company/company.module';
 import { DailyLogModule } from './daily-log/daily-log.module';
 import { GitCommitModule } from './git-commit/git-commit.module';
+import { PdfModule } from './pdf/pdf.module';
 import { ProjectLogModule } from './project-log/project-log.module';
 import { ProjectModule } from './project/project.module';
 import { StudentModule } from './student/student.module';
@@ -24,6 +25,7 @@ import { StudentModule } from './student/student.module';
     CompanyModule,
     ProjectLogModule,
     AuthModule,
+    PdfModule,
   ],
 })
 export class AppModule {}
