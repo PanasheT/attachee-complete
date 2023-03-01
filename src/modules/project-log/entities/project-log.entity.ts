@@ -29,6 +29,9 @@ export class ProjectLogEntity extends AbstractEntity {
   @Column({ default: null })
   notes: string;
 
+  @Column({ default: null })
+  fileId: string;
+
   @ManyToOne(() => ProjectEntity, (project: ProjectEntity) => project.logs, {
     eager: true,
   })

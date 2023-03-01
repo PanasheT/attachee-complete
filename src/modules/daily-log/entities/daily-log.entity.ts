@@ -15,10 +15,13 @@ export class DailyLogEntity extends AbstractEntity {
   checkOut: Date;
 
   @Column({ default: null })
-  difficulties?: string;
+  difficulties: string;
 
   @Column({ default: null })
-  comment?: string;
+  comment: string;
+
+  @Column({ default: null })
+  fileId: string;
 
   @ManyToOne(
     () => StudentEntity,
