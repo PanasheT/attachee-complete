@@ -17,6 +17,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Response } from 'express';
+import * as fs from 'fs';
+import * as moment from 'moment';
+import { GoogleDriveService } from 'src/modules/google-drive/services';
 import { PdfService } from 'src/modules/pdf/services/pdf.service';
 import { Readable } from 'stream';
 import {
@@ -32,7 +35,8 @@ import { ProjectLogService } from '../services';
 export class ProjectLogController {
   constructor(
     private readonly service: ProjectLogService,
-    private readonly pdfService: PdfService
+    private readonly pdfService: PdfService,
+    private readonly googleDriveService: GoogleDriveService
   ) {}
 
   @Post()
@@ -47,6 +51,8 @@ export class ProjectLogController {
     const projectLog: ProjectLogEntity = await this.service.createProjectLog(
       model
     );
+
+    await this.pdfService.saveAndUploadProjectLogToDrive(projectLog);
 
     return ProjectLogDtoFactory(projectLog);
   }
@@ -96,6 +102,12 @@ export class ProjectLogController {
 
     stream.push(buffer);
     stream.push(null);
+
+    const fileName: string = `school_assessment_form_${moment(
+      projectLog.logDate
+    ).format('DD_MM_YYYY')}`;
+
+    fs.writeFileSync(`PDF_LOGS/projects/${fileName}.pdf`, buffer);
 
     response.set({
       'Content-Type': 'application/pdf',

@@ -10,6 +10,8 @@ export interface ProjectLogPdf {
   }[];
   logDate: string;
   regNumber: string;
+  notes: string;
+  name;
 }
 
 export function ProjectLogPdfFactory(model: ProjectLogEntity): ProjectLogPdf {
@@ -26,5 +28,7 @@ export function ProjectLogPdfFactory(model: ProjectLogEntity): ProjectLogPdf {
     projectLogEntries,
     logDate: moment(model.logDate).format('Do [of] MMMM, YYYY'),
     regNumber: model.project.student.regNumber,
+    notes: model.notes,
+    name: model.project.name,
   };
 }
