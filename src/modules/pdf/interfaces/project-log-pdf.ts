@@ -11,7 +11,7 @@ export interface ProjectLogPdf {
   logDate: string;
   regNumber: string;
   notes: string;
-  name;
+  name: string;
 }
 
 export function ProjectLogPdfFactory(model: ProjectLogEntity): ProjectLogPdf {

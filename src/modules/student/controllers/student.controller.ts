@@ -2,11 +2,13 @@ import {
   Body,
   Controller,
   Get,
+  Header,
   HttpCode,
   HttpStatus,
   Param,
   Post,
   Put,
+  Res,
 } from '@nestjs/common';
 import {
   ApiCreatedResponse,
@@ -15,18 +17,25 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { Response } from 'express';
+import { PdfService } from 'src/modules/pdf/services';
+import { Readable } from 'stream';
 import {
   CreateStudentDto,
   StudentDto,
   StudentDtoFactory,
   UpdateStudentDto,
 } from '../dtos';
+import { StudentEntity } from '../entities';
 import { StudentService } from '../services';
 
 @Controller('students')
 @ApiTags('students')
 export class StudentController {
-  constructor(private readonly service: StudentService) {}
+  constructor(
+    private readonly service: StudentService,
+    private readonly pdfService: PdfService
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new student.' })
@@ -81,5 +90,37 @@ export class StudentController {
   ): Promise<StudentDto> {
     const student = await this.service.updateStudent(uuid, model);
     return StudentDtoFactory(student);
+  }
+
+  @Get(':uuid/summary')
+  @ApiOperation({
+    summary: 'Get a pdf summarising the details of a specific stuednt by uuid.',
+  })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Student details pdf successfully created.',
+  })
+  @Header('content-type', 'application/pdf')
+  public async getStudentDetailsPdf(
+    @Param('uuid') uuid: string,
+    @Res() response: Response
+  ) {
+    const student: StudentEntity = await this.service.findOneStudentOrFail(
+      uuid,
+      'uuid'
+    );
+
+    const buffer = await this.pdfService.generateStudentDetailsPdf(student);
+
+    const stream = new Readable();
+    stream.push(buffer);
+    stream.push(null);
+
+    response.set({
+      'Content-Type': 'application/pdf',
+      'Content-Length': buffer.length,
+    });
+
+    return stream.pipe(response);
   }
 }

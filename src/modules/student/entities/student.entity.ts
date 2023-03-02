@@ -42,7 +42,11 @@ export class StudentEntity extends AbstractEntity {
   @OneToMany(() => ProjectEntity, (project: ProjectEntity) => project.student)
   projects: ProjectEntity[];
 
-  @ManyToOne(() => CompanyEntity, (company: CompanyEntity) => company.students)
+  @ManyToOne(
+    () => CompanyEntity,
+    (company: CompanyEntity) => company.students,
+    { eager: true }
+  )
   @JoinColumn()
   company: CompanyEntity;
 }
