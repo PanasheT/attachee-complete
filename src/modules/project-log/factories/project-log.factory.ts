@@ -16,7 +16,7 @@ export class ProjectLogFactory {
     model: Omit<CreateProjectLogDto, 'projectUUID'>,
     project: ProjectEntity
   ): ProjectLogEntity {
-    let hoursWorked: number = model.tasks.reduce(
+    const hoursWorked: number = model.tasks.reduce(
       (a, b) => a + b.hoursWorked,
       0
     );

@@ -50,7 +50,7 @@ export class PdfService {
   public async saveAndUploadProjectLogToDrive(model: ProjectLogEntity) {
     const buffer = await this.generatePdfByType(model, 'projectLog');
 
-    const fileName: string = `Project_Log_${moment(model.logDate).format(
+    const fileName = `Project_Log_${moment(model.logDate).format(
       'DD_MM_YYYY'
     )}`;
 

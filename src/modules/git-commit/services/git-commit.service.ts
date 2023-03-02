@@ -38,7 +38,7 @@ export class GitCommitService {
   private generateFindQuery(
     value: string,
     property: GitCommitIdProps,
-    deleted: boolean = false
+    deleted = false
   ): FindGitCommitQuery {
     return { [property]: value, deleted };
   }
@@ -71,7 +71,7 @@ export class GitCommitService {
   public async findGitCommitsByStudentUUID(
     studentUUID: string
   ): Promise<GitCommitEntity[]> {
-    const deleted: boolean = false;
+    const deleted = false;
     return await this.repo.findBy({
       dailyLog: { student: { uuid: studentUUID, deleted }, deleted },
       deleted,

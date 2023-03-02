@@ -52,7 +52,7 @@ export class CompanyService {
   private generateFindQuery(
     value: string,
     property: CompanyIdentificationProperties,
-    deleted: boolean = false
+    deleted = false
   ): FindCompanyQuery {
     return { [property]: value, deleted };
   }
