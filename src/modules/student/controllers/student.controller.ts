@@ -110,7 +110,10 @@ export class StudentController {
       'uuid'
     );
 
-    const buffer = await this.pdfService.generateStudentDetailsPdf(student);
+    const buffer = await this.pdfService.generatePdfByType(
+      student,
+      'studentDetails'
+    );
 
     const stream = new Readable();
     stream.push(buffer);

@@ -117,7 +117,10 @@ export class DailyLogController {
       throw new NotAcceptableException('Student has no company assigned.');
     }
 
-    const buffer = await this.pdfService.generateDailyLogPdf(dailyLog);
+    const buffer = await this.pdfService.generatePdfByType(
+      dailyLog,
+      'dailyLog'
+    );
     const stream = new Readable();
 
     stream.push(buffer);

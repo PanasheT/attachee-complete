@@ -112,7 +112,10 @@ export class ProjectController {
       'uuid'
     );
 
-    const buffer = await this.pdfService.generateProjectDetailsPdf(project);
+    const buffer = await this.pdfService.generatePdfByType(
+      project,
+      'projectDetails'
+    );
 
     const stream = new Readable();
     stream.push(buffer);
