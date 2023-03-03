@@ -41,7 +41,7 @@ export class AuthFactory {
     });
   }
 
-  private async generateToken(
+  public async generateToken(
     payload: StudentDto,
     refreshToken: boolean = false
   ): Promise<string> {
@@ -57,7 +57,7 @@ export class AuthFactory {
       );
     } catch (error) {
       this.logger.error(error?.message || error);
-      throw new InternalServerErrorException('Login failed unexpectedly.');
+      throw new InternalServerErrorException('Unexpected auth failure.');
     }
   }
 
@@ -70,7 +70,7 @@ export class AuthFactory {
       await this.studentService.addRefreshTokenToStudent(student);
     } catch (error) {
       this.logger.error(error?.message || error);
-      throw new InternalServerErrorException('Login failed unexpectedly.');
+      throw new InternalServerErrorException('Unexpected auth failure.');
     }
   }
 }

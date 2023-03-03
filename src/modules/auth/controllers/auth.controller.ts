@@ -4,6 +4,7 @@ import {
   HttpCode,
   HttpStatus,
   NotAcceptableException,
+  Param,
   Post,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -46,5 +47,19 @@ export class AuthController {
     }
 
     await this.service.updateStudentPassword(model);
+  }
+
+  @Post('token/:studentUUID')
+  @ApiOperation({ summary: 'Refresh a students token.' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Token refresh successful',
+    type: String,
+  })
+  public async refreshToken(
+    @Param('studentUUID') studentUUID: string,
+    @Body() model: { refreshToken: string }
+  ): Promise<string> {
+    return await this.service.refreshToken(studentUUID, model.refreshToken);
   }
 }
