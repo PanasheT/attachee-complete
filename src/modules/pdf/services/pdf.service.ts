@@ -7,8 +7,11 @@ import * as fs from 'fs';
 import * as handlebars from 'handlebars';
 import * as html_to_pdf from 'html-pdf-node';
 import * as moment from 'moment';
+import { DailyLogEntity } from 'src/modules/daily-log/entities';
 import { GoogleDriveService } from 'src/modules/google-drive/services';
 import { ProjectLogEntity } from 'src/modules/project-log/entities';
+import { ProjectEntity } from 'src/modules/project/entities';
+import { StudentEntity } from 'src/modules/student/entities';
 import {
   DailyLogPdfFactory,
   ProjectDetailsPdfFactory,
@@ -59,6 +62,22 @@ export class PdfService {
     await this.googleDriveService.uploadFile(fileName);
   }
 
+  public async generatePdfByType(
+    model: StudentEntity,
+    key: 'studentDetails'
+  ): Promise<Buffer>;
+  public async generatePdfByType(
+    model: DailyLogEntity,
+    key: 'dailyLog'
+  ): Promise<Buffer>;
+  public async generatePdfByType(
+    model: ProjectLogEntity,
+    key: 'projectLog'
+  ): Promise<Buffer>;
+  public async generatePdfByType(
+    model: ProjectEntity,
+    key: 'projectDetails'
+  ): Promise<Buffer>;
   public async generatePdfByType<T>(model: T, key: PdfType): Promise<Buffer> {
     try {
       const { templatePath, factory } = PdfFactory[key];
