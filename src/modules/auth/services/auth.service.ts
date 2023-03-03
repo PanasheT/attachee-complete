@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { StudentEntity } from 'src/modules/student/entities';
 import { StudentService } from 'src/modules/student/services';
 import { isPasswordCorrect } from 'src/util';
-import { StudentLoginDto } from '../dtos';
+import { StudentLoginDto, UpdateStudentPasswordDto } from '../dtos';
 import { AuthFactory } from '../factories';
 
 @Injectable()
@@ -28,5 +28,17 @@ export class AuthService {
     if (!isPasswordCorrect(password, hashedPassword)) {
       throw new UnauthorizedException('Invalid credentials.');
     }
+  }
+
+  public async updateStudentPassword(
+    uuid: string,
+    { newPassword, oldPassword }: UpdateStudentPasswordDto
+  ): Promise<void> {
+    const student: StudentEntity =
+      await this.studentService.findOneStudentOrFail(uuid, 'uuid');
+
+    await this.comparePasswords(oldPassword, student.password);
+
+    await this.studentService.updateStudentPassword(student, newPassword);
   }
 }

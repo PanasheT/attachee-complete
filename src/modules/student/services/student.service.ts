@@ -131,4 +131,12 @@ export class StudentService {
     const student: StudentEntity = this.factory.removeCompanyFromStudent(model);
     return await this.handleStudentSave(student);
   }
+
+  public async updateStudentPassword(
+    model: StudentEntity,
+    password: string
+  ): Promise<void> {
+    const student: StudentEntity = Object.assign(model, password);
+    await this.handleStudentSave(student);
+  }
 }
