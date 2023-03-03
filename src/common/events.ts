@@ -1,3 +1,3 @@
-export const StudentCreatedEvent: string = 'student.created';
-export const ProjectLogCreatedEvent: string = 'projectLog.created';
-export const DailyLogCreatedEvent: string = 'dailyLog.created';
+export const StudentCreatedEvent = 'student.created';
+export const ProjectLogCreatedEvent = 'projectLog.created';
+export const DailyLogCreatedEvent = 'dailyLog.created';

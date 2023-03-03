@@ -4,8 +4,6 @@ import { EventSubscriber, InsertEvent, UpdateEvent } from 'typeorm';
 
 @EventSubscriber()
 export class StudentSubscriber {
-  constructor() {}
-
   listenTo() {
     return StudentEntity;
   }
