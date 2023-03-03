@@ -33,6 +33,9 @@ export class StudentEntity extends AbstractEntity {
   @Column()
   password: string;
 
+  @Column({ default: null })
+  refreshToken: string;
+
   @OneToMany(
     () => DailyLogEntity,
     (dailyLog: DailyLogEntity) => dailyLog.student

@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { StudentDto, StudentDtoFactory } from 'src/modules/student/dtos';
 import { StudentEntity } from 'src/modules/student/entities';
+import { StudentService } from 'src/modules/student/services';
 import { StudentLoginResultDto } from '../dtos';
 
 @Injectable()
@@ -15,7 +16,8 @@ export class AuthFactory {
 
   constructor(
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly studentService: StudentService
   ) {}
 
   public async generateSuccessfulLoginResult(
@@ -28,25 +30,47 @@ export class AuthFactory {
     }
 
     const token: string = await this.generateToken(payload);
+    const refreshToken: string = await this.generateToken(payload, true);
+
+    await this.updateStudentRefreshToken(refreshToken, model);
 
     return Object.assign(new StudentLoginResultDto(), {
       student: payload,
+      refreshToken,
       token,
     });
   }
 
-  private async generateToken(payload: StudentDto): Promise<string> {
+  private async generateToken(
+    payload: StudentDto,
+    refreshToken: boolean = false
+  ): Promise<string> {
     try {
       return await this.jwtService.signAsync(
         { ...payload },
         {
           secret: this.configService.get<string>('TOKEN_SECRET'),
-          expiresIn: this.configService.get<number>('TOKEN_DURATION'),
+          expiresIn: !!refreshToken
+            ? '7d'
+            : this.configService.get<number>('TOKEN_DURATION'),
         }
       );
     } catch (error) {
       this.logger.error(error?.message || error);
-      throw new InternalServerErrorException('Unable to generate token.');
+      throw new InternalServerErrorException('Login failed unexpectedly.');
+    }
+  }
+
+  private async updateStudentRefreshToken(
+    refreshToken: string,
+    model: StudentEntity
+  ): Promise<void> {
+    try {
+      const student: StudentEntity = Object.assign(model, { refreshToken });
+      await this.studentService.addRefreshTokenToStudent(student);
+    } catch (error) {
+      this.logger.error(error?.message || error);
+      throw new InternalServerErrorException('Login failed unexpectedly.');
     }
   }
 }
