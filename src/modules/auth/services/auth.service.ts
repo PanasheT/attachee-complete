@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -81,6 +82,25 @@ export class AuthService {
     } catch (error) {
       this.logger.error(error?.message || error);
       throw new ForbiddenException();
+    }
+  }
+
+  public async logoutStudent(studentUUID: string): Promise<void> {
+    const student: StudentEntity =
+      await this.studentService.findOneStudentOrFail(studentUUID, 'uuid');
+
+    await this.invalidateRefreshToken(student);
+  }
+
+  private async invalidateRefreshToken(model: StudentEntity): Promise<void> {
+    try {
+      const student: StudentEntity = Object.assign(model, {
+        refreshToken: null,
+      });
+
+      await this.studentService.studentUpdateFromAuth(student);
+    } catch (error) {
+      throw new InternalServerErrorException('Logout operation unhandled.');
     }
   }
 }

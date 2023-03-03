@@ -67,7 +67,7 @@ export class AuthFactory {
   ): Promise<void> {
     try {
       const student: StudentEntity = Object.assign(model, { refreshToken });
-      await this.studentService.addRefreshTokenToStudent(student);
+      await this.studentService.studentUpdateFromAuth(student);
     } catch (error) {
       this.logger.error(error?.message || error);
       throw new InternalServerErrorException('Unexpected auth failure.');

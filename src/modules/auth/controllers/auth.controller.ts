@@ -6,8 +6,14 @@ import {
   NotAcceptableException,
   Param,
   Post,
+  Put,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   StudentLoginDto,
   StudentLoginResultDto,
@@ -61,5 +67,17 @@ export class AuthController {
     @Body() model: { refreshToken: string }
   ): Promise<string> {
     return await this.service.refreshToken(studentUUID, model.refreshToken);
+  }
+
+  @Put('logout/:studentUUID')
+  @ApiOperation({ summary: 'Logout a student.' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse({
+    description: 'Student logout successful.',
+  })
+  public async logoutStudent(
+    @Param('studentUUID') studentUUID: string
+  ): Promise<void> {
+    await this.service.logoutStudent(studentUUID);
   }
 }

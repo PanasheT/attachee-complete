@@ -143,7 +143,7 @@ export class StudentService {
     await this.handleStudentSave(student);
   }
 
-  public async addRefreshTokenToStudent(student: StudentEntity): Promise<void> {
+  public async studentUpdateFromAuth(student: StudentEntity): Promise<void> {
     await this.handleStudentSave(student);
   }
 }
