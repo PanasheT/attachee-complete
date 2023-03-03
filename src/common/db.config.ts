@@ -1,5 +1,5 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CommonSubscriber } from 'src/subscribers';
+import { CommonSubscriber, StudentSubscriber } from 'src/subscribers';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 export const DB_CONFIG: any = {
@@ -10,7 +10,7 @@ export const DB_CONFIG: any = {
     synchronize: true,
     autoLoadEntities: true,
     namingStrategy: new SnakeNamingStrategy(),
-    subscribers: [CommonSubscriber],
+    subscribers: [CommonSubscriber, StudentSubscriber],
   }),
   inject: [ConfigService],
 };

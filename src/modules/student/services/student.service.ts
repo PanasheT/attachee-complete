@@ -136,7 +136,10 @@ export class StudentService {
     model: StudentEntity,
     password: string
   ): Promise<void> {
-    const student: StudentEntity = Object.assign(model, password);
+    const student: StudentEntity = this.factory.updateStudentPassword(
+      model,
+      password
+    );
     await this.handleStudentSave(student);
   }
 }

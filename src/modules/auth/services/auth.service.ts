@@ -4,7 +4,6 @@ import { StudentService } from 'src/modules/student/services';
 import { isPasswordCorrect } from 'src/util';
 import { StudentLoginDto, UpdateStudentPasswordDto } from '../dtos';
 import { AuthFactory } from '../factories';
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -25,17 +24,18 @@ export class AuthService {
     password: string,
     hashedPassword: string
   ): Promise<void> {
-    if (!isPasswordCorrect(password, hashedPassword)) {
+    if (!(await isPasswordCorrect(password, hashedPassword))) {
       throw new UnauthorizedException('Invalid credentials.');
     }
   }
 
-  public async updateStudentPassword(
-    uuid: string,
-    { newPassword, oldPassword }: UpdateStudentPasswordDto
-  ): Promise<void> {
+  public async updateStudentPassword({
+    newPassword,
+    oldPassword,
+    studentUUID,
+  }: UpdateStudentPasswordDto): Promise<void> {
     const student: StudentEntity =
-      await this.studentService.findOneStudentOrFail(uuid, 'uuid');
+      await this.studentService.findOneStudentOrFail(studentUUID, 'uuid');
 
     await this.comparePasswords(oldPassword, student.password);
 

@@ -55,4 +55,11 @@ export class StudentFactory {
   public removeCompanyFromStudent(student: StudentEntity): StudentEntity {
     return Object.assign(student, { company: null });
   }
+
+  public updateStudentPassword(
+    model: StudentEntity,
+    password: string
+  ): StudentEntity {
+    return Object.assign(model, { password });
+  }
 }

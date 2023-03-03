@@ -1,6 +1,10 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class UpdateStudentPasswordDto {
+  @IsUUID()
+  @IsNotEmpty()
+  readonly studentUUID: string;
+
   @IsString()
   @IsNotEmpty()
   readonly oldPassword: string;
