@@ -51,4 +51,8 @@ export class StudentFactory {
   ): StudentEntity {
     return Object.assign(student, { company });
   }
+
+  public removeCompanyFromStudent(student: StudentEntity): StudentEntity {
+    return Object.assign(student, { company: null });
+  }
 }

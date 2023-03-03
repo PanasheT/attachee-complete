@@ -122,8 +122,13 @@ export class StudentService {
       company
     );
 
-    console.log(student);
+    return await this.handleStudentSave(student);
+  }
 
+  public async removeCompanyFromStudent(
+    model: StudentEntity
+  ): Promise<StudentEntity> {
+    const student: StudentEntity = this.factory.removeCompanyFromStudent(model);
     return await this.handleStudentSave(student);
   }
 }

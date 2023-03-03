@@ -117,17 +117,46 @@ export class CompanyService {
     uuid: string,
     studentUUID: string
   ): Promise<void> {
-    const company: CompanyEntity = await this.findOneCompanyOrFail(
+    const { company, student } = await this.getCompanyAndStudent(
       uuid,
-      'uuid'
+      studentUUID
     );
-    const student: StudentEntity =
-      await this.studentService.findOneStudentOrFail(studentUUID, 'uuid');
 
     if (student.company) {
       throw new NotAcceptableException('Student is already attached.');
     }
 
     await this.studentService.addCompanyToStudent(student, company);
+  }
+
+  public async removeStudentFromCompany(
+    uuid: string,
+    studentUUID: string
+  ): Promise<void> {
+    const { company, student } = await this.getCompanyAndStudent(
+      uuid,
+      studentUUID
+    );
+
+    if (student.company.uuid !== company.uuid) {
+      throw new NotAcceptableException(
+        'Student is not attached to this company.'
+      );
+    }
+
+    await this.studentService.removeCompanyFromStudent(student);
+  }
+
+  private async getCompanyAndStudent(
+    uuid: string,
+    studentUUID: string
+  ): Promise<{ student: StudentEntity; company: CompanyEntity }> {
+    return {
+      company: await this.findOneCompanyOrFail(uuid, 'uuid'),
+      student: await this.studentService.findOneStudentOrFail(
+        studentUUID,
+        'uuid'
+      ),
+    };
   }
 }
