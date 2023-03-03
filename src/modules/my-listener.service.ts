@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import * as moment from 'moment';
-import { ProjectLogCreatedEvent } from 'src/common';
+import { DailyLogCreatedEvent, ProjectLogCreatedEvent } from 'src/common';
+import { DailyLogEntity } from './daily-log/entities';
 import { PdfService } from './pdf/services';
 import { ProjectLogEntity } from './project-log/entities';
 
@@ -16,5 +17,14 @@ export class MyListenerService {
     )}`;
 
     await this.pdfService.generatePdfByType(model, 'projectLog', fileName);
+  }
+
+  @OnEvent(DailyLogCreatedEvent, { async: true })
+  public async uploadDailyLogToGoogleDrive(model: DailyLogEntity) {
+    const fileName: string = `Daily_Log_${moment(model.checkIn).format(
+      'DD_MM_YYYY'
+    )}`;
+
+    await this.pdfService.generatePdfByType(model, 'dailyLog', fileName);
   }
 }
