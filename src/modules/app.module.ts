@@ -1,5 +1,6 @@
 import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DB_CONFIG } from 'src/common';
 import { AuthModule } from './auth/auth.module';
@@ -17,6 +18,7 @@ import { StudentModule } from './student/student.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    EventEmitterModule.forRoot(),
     CacheModule.register({ isGlobal: true }),
     TypeOrmModule.forRootAsync(DB_CONFIG),
     StudentModule,

@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
 import * as basicAuth from 'express-basic-auth';
+import 'reflect-metadata';
 import { AppModule } from './modules/app.module';
 
 async function bootstrap() {
