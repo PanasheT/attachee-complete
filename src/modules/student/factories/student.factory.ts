@@ -49,6 +49,6 @@ export class StudentFactory {
     student: StudentEntity,
     company: CompanyEntity
   ): StudentEntity {
-    return Object.assign(student, company);
+    return Object.assign(student, { company });
   }
 }

@@ -88,4 +88,17 @@ export class CompanyController {
 
     return CompanyDtoFactory(updatedCompany);
   }
+
+  @Put(':uuid/student/:studentUuid')
+  @ApiOperation({ summary: 'Add a student to a company.' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Student successfully added to company.',
+  })
+  public async addStudentToCompany(
+    @Param('uuid') uuid: string,
+    @Param('studentUuid') studentUuid: string
+  ): Promise<void> {
+    await this.service.addUnattachedStudentToCompany(uuid, studentUuid);
+  }
 }

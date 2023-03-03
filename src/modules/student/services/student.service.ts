@@ -122,6 +122,8 @@ export class StudentService {
       company
     );
 
+    console.log(student);
+
     return await this.handleStudentSave(student);
   }
 }
