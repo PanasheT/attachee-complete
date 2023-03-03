@@ -14,7 +14,7 @@ import { StudentService } from './services';
     GoogleDriveModule,
   ],
   controllers: [StudentController],
-  exports: [StudentService],
+  exports: [StudentService, StudentFactory],
   providers: [StudentService, StudentFactory],
 })
 export class StudentModule {}

@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CompanyEntity } from 'src/modules/company/entities';
 import { validateUpdate } from 'src/util';
 import { Repository } from 'typeorm';
 import { CreateStudentDto, UpdateStudentDto } from '../dtos';
@@ -42,5 +43,12 @@ export class StudentFactory {
     const validatedDto: UpdateStudentDto = validateUpdate(student, model);
     await this.assertStudentExists(model);
     return Object.assign(student, validatedDto);
+  }
+
+  public addCompanyToStudent(
+    student: StudentEntity,
+    company: CompanyEntity
+  ): StudentEntity {
+    return Object.assign(student, company);
   }
 }

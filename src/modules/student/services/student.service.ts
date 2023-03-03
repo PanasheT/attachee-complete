@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CompanyEntity } from 'src/modules/company/entities';
 import { Repository } from 'typeorm';
 import { CreateStudentDto, UpdateStudentDto } from '../dtos';
 import { StudentEntity } from '../entities';
@@ -110,5 +111,17 @@ export class StudentService {
     } catch (error) {
       throw new HttpException(error?.message, error?.status);
     }
+  }
+
+  public async addCompanyToStudent(
+    model: StudentEntity,
+    company: CompanyEntity
+  ): Promise<StudentEntity> {
+    const student: StudentEntity = this.factory.addCompanyToStudent(
+      model,
+      company
+    );
+
+    return await this.handleStudentSave(student);
   }
 }

@@ -3,9 +3,12 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { StudentEntity } from 'src/modules/student/entities';
+import { StudentService } from 'src/modules/student/services';
 import { Repository } from 'typeorm';
 import { CreateCompanyDto, UpdateCompanyDto } from '../dtos';
 import { CompanyEntity } from '../entities';
@@ -22,7 +25,8 @@ export class CompanyService {
   constructor(
     @InjectRepository(CompanyEntity)
     private readonly repo: Repository<CompanyEntity>,
-    private readonly factory: CompanyFactory
+    private readonly factory: CompanyFactory,
+    private readonly studentService: StudentService
   ) {}
 
   public async findOneCompany(
@@ -107,5 +111,23 @@ export class CompanyService {
     } catch (error) {
       throw new HttpException(error?.message, error?.status);
     }
+  }
+
+  public async addUnattachedStudentToCompany(
+    uuid: string,
+    studentUUID: string
+  ): Promise<void> {
+    const company: CompanyEntity = await this.findOneCompanyOrFail(
+      uuid,
+      'uuid'
+    );
+    const student: StudentEntity =
+      await this.studentService.findOneStudentOrFail(studentUUID, 'uuid');
+
+    if (student.company) {
+      throw new NotAcceptableException('Student is already attached.');
+    }
+
+    await this.studentService.addCompanyToStudent(student, company);
   }
 }
