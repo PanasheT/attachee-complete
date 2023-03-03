@@ -89,7 +89,7 @@ export class CompanyController {
     return CompanyDtoFactory(updatedCompany);
   }
 
-  @Put(':uuid/student/:studentUuid')
+  @Put(':uuid/student/:studentUUID')
   @ApiOperation({ summary: 'Add a student to a company.' })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
@@ -97,8 +97,21 @@ export class CompanyController {
   })
   public async addStudentToCompany(
     @Param('uuid') uuid: string,
-    @Param('studentUuid') studentUuid: string
+    @Param('studentUUID') studentUUID: string
   ): Promise<void> {
-    await this.service.addUnattachedStudentToCompany(uuid, studentUuid);
+    await this.service.addUnattachedStudentToCompany(uuid, studentUUID);
+  }
+
+  @Put(':uuid/student/:studentUUID/remove')
+  @ApiOperation({ summary: 'Remove a student from a company.' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Student successfully removed from company.',
+  })
+  public async removeStudentFromCompany(
+    @Param('uuid') uuid: string,
+    @Param('studentUUID') studentUUID: string
+  ): Promise<void> {
+    await this.service.removeStudentFromCompany(uuid, studentUUID);
   }
 }
