@@ -7,11 +7,8 @@ import * as fs from 'fs';
 import * as handlebars from 'handlebars';
 import * as html_to_pdf from 'html-pdf-node';
 import * as moment from 'moment';
-import { DailyLogEntity } from 'src/modules/daily-log/entities';
 import { GoogleDriveService } from 'src/modules/google-drive/services';
 import { ProjectLogEntity } from 'src/modules/project-log/entities';
-import { ProjectEntity } from 'src/modules/project/entities';
-import { StudentEntity } from 'src/modules/student/entities';
 import {
   DailyLogPdfFactory,
   ProjectDetailsPdfFactory,
@@ -20,30 +17,30 @@ import {
 import { ProjectLogPdfFactory } from '../interfaces/project-log-pdf';
 import { PdfType, PdfUtility } from '../types';
 
+const PdfFactory: Record<PdfType, PdfUtility> = {
+  studentDetails: {
+    templatePath: 'src/modules/pdf/templates/student-details.hbs',
+    factory: StudentDetailsPdfFactory,
+  },
+  dailyLog: {
+    templatePath: 'src/modules/pdf/templates/daily-log.hbs',
+    factory: DailyLogPdfFactory,
+  },
+  projectLog: {
+    templatePath: 'src/modules/pdf/templates/project-log.hbs',
+    factory: ProjectLogPdfFactory,
+  },
+  projectDetails: {
+    templatePath: 'src/modules/pdf/templates/project-details.hbs',
+    factory: ProjectDetailsPdfFactory,
+  },
+};
+
 @Injectable()
 export class PdfService {
   private logger = new Logger(PdfService.name);
 
   protected readonly localLogStoragePath: string = 'PDF_LOGS/projects/';
-
-  protected readonly PdfFactory: Record<PdfType, PdfUtility> = {
-    studentDetails: {
-      template: 'src/modules/pdf/templates/student-details.hbs',
-      factory: StudentDetailsPdfFactory,
-    },
-    dailyLog: {
-      template: 'src/modules/pdf/templates/daily-log.hbs',
-      factory: DailyLogPdfFactory,
-    },
-    projectLog: {
-      template: 'src/modules/pdf/templates/project-log.hbs',
-      factory: ProjectLogPdfFactory,
-    },
-    projectDetails: {
-      template: 'src/modules/pdf/templates/project-details.hbs',
-      factory: ProjectDetailsPdfFactory,
-    },
-  };
 
   constructor(private readonly googleDriveService: GoogleDriveService) {}
 
@@ -54,21 +51,23 @@ export class PdfService {
       'DD_MM_YYYY'
     )}`;
 
-    fs.writeFileSync(`${this.localLogStoragePath}${fileName}.pdf`, buffer);
+    await fs.promises.writeFile(
+      `${this.localLogStoragePath}${fileName}.pdf`,
+      buffer
+    );
 
     await this.googleDriveService.uploadFile(fileName);
   }
 
-  public async generatePdfByType(
-    model: StudentEntity | ProjectEntity | ProjectLogEntity | DailyLogEntity,
-    key: PdfType
-  ): Promise<any> {
+  public async generatePdfByType<T>(model: T, key: PdfType): Promise<Buffer> {
     try {
+      const { templatePath, factory } = PdfFactory[key];
+
       const template = handlebars.compile(
-        fs.readFileSync(this.PdfFactory[key].template, 'utf8')
+        await fs.promises.readFile(templatePath, 'utf8')
       );
 
-      const content = template(this.PdfFactory[key].factory(model));
+      const content = template(factory(model));
 
       return await html_to_pdf.generatePdf(
         { content },

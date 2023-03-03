@@ -5,6 +5,6 @@ export type PdfType =
   | 'projectDetails';
 
 export type PdfUtility = {
-  template: string;
-  factory: (arg) => any;
+  templatePath: string;
+  factory: (arg: any) => any;
 };
