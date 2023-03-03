@@ -8,6 +8,7 @@ import { CompanyModule } from './company/company.module';
 import { DailyLogModule } from './daily-log/daily-log.module';
 import { GitCommitModule } from './git-commit/git-commit.module';
 import { GoogleDriveModule } from './google-drive/google-drive.module';
+import { MyListenerService } from './my-listener.service';
 import { PdfModule } from './pdf/pdf.module';
 import { ProjectLogModule } from './project-log/project-log.module';
 import { ProjectModule } from './project/project.module';
@@ -31,5 +32,6 @@ import { StudentModule } from './student/student.module';
     PdfModule,
     GoogleDriveModule,
   ],
+  providers: [MyListenerService],
 })
 export class AppModule {}

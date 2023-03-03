@@ -64,21 +64,29 @@ export class PdfService {
 
   public async generatePdfByType(
     model: StudentEntity,
-    key: 'studentDetails'
+    key: 'studentDetails',
+    fileName?: string
   ): Promise<Buffer>;
   public async generatePdfByType(
     model: DailyLogEntity,
-    key: 'dailyLog'
+    key: 'dailyLog',
+    fileName?: string
   ): Promise<Buffer>;
   public async generatePdfByType(
     model: ProjectLogEntity,
-    key: 'projectLog'
+    key: 'projectLog',
+    fileName?: string
   ): Promise<Buffer>;
   public async generatePdfByType(
     model: ProjectEntity,
-    key: 'projectDetails'
+    key: 'projectDetails',
+    fileName?: string
   ): Promise<Buffer>;
-  public async generatePdfByType<T>(model: T, key: PdfType): Promise<Buffer> {
+  public async generatePdfByType<T>(
+    model: T,
+    key: PdfType,
+    fileName: string = undefined
+  ): Promise<Buffer> {
     try {
       const { templatePath, factory } = PdfFactory[key];
 
@@ -88,13 +96,33 @@ export class PdfService {
 
       const content = template(factory(model));
 
-      return await html_to_pdf.generatePdf(
+      const buffer: Buffer = await html_to_pdf.generatePdf(
         { content },
         { preferCSSPageSize: true, printBackground: true }
       );
+
+      if (fileName) {
+        await this.handlePdfUpload(buffer, fileName);
+      }
+
+      return buffer;
     } catch (error) {
       this.logger.error(error?.message || error);
       throw new InternalServerErrorException('Failed to create PDF.');
+    }
+  }
+
+  private async handlePdfUpload(buffer: Buffer, fileName: string) {
+    try {
+      await fs.promises.writeFile(
+        `${this.localLogStoragePath}${fileName}.pdf`,
+        buffer
+      );
+
+      await this.googleDriveService.uploadFile(fileName);
+    } catch (error) {
+      this.logger.error(error?.message || error);
+      throw new InternalServerErrorException('Failed to upload PDF.');
     }
   }
 }

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { StudentSubscriber } from 'src/subscribers';
 import { GoogleDriveModule } from '../google-drive/google-drive.module';
 import { PdfModule } from '../pdf/pdf.module';
 import { StudentController } from './controllers';
@@ -15,6 +16,6 @@ import { StudentService } from './services';
   ],
   controllers: [StudentController],
   exports: [StudentService, StudentFactory],
-  providers: [StudentService, StudentFactory],
+  providers: [StudentService, StudentFactory, StudentSubscriber],
 })
 export class StudentModule {}

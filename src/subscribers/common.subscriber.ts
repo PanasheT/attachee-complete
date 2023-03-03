@@ -1,11 +1,7 @@
-import {
-  EntitySubscriberInterface,
-  EventSubscriber,
-  UpdateEvent,
-} from 'typeorm';
+import { EventSubscriber, UpdateEvent } from 'typeorm';
 
 @EventSubscriber()
-export class CommonSubscriber implements EntitySubscriberInterface {
+export class CommonSubscriber {
   beforeUpdate(event: UpdateEvent<any>): void {
     event.entity.updatedAt = new Date();
   }
