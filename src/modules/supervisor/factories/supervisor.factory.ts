@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateSupervisorDto } from '../dtos';
 import { SupervisorEntity } from '../entities';
+import { FindSupervisorQuery } from '../types';
 
 @Injectable()
 export class SupervisorFactory {
@@ -24,7 +25,7 @@ export class SupervisorFactory {
     phone: string
   ): Promise<void> {
     const deleted: boolean = false;
-    const query = [
+    const query: FindSupervisorQuery[] = [
       { email, deleted },
       { phone, deleted },
     ];
