@@ -26,7 +26,7 @@ export function StudentDetailsPdfFactory(
     yearOfStudy: model.yearOfStudy,
     companyName: model.company.name,
     director: model.company.director,
-    supervisor: model.company.supervisor,
+    supervisor: model.company.supervisor.firstName, //TODO
     telephone: model.company.telephone,
     address: model.company.address,
   };

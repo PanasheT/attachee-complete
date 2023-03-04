@@ -1,14 +1,12 @@
 import { AbstractEntity } from 'src/common';
 import { StudentEntity } from 'src/modules/student/entities';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { SupervisorEntity } from 'src/modules/supervisor/entities';
+import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
 
 @Entity({ name: 'company' })
 export class CompanyEntity extends AbstractEntity {
   @Column({ unique: true })
   name: string;
-
-  @Column()
-  supervisor: string;
 
   @Column()
   director: string;
@@ -21,4 +19,11 @@ export class CompanyEntity extends AbstractEntity {
 
   @OneToMany(() => StudentEntity, (student: StudentEntity) => student.company)
   students: StudentEntity[];
+
+  @OneToOne(
+    () => SupervisorEntity,
+    (supervisor: SupervisorEntity) => supervisor.company,
+    { cascade: true, eager: true, onDelete: 'CASCADE' }
+  )
+  supervisor: SupervisorEntity;
 }

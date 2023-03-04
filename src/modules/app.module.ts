@@ -14,6 +14,7 @@ import { PdfModule } from './pdf/pdf.module';
 import { ProjectLogModule } from './project-log/project-log.module';
 import { ProjectModule } from './project/project.module';
 import { StudentModule } from './student/student.module';
+import { SupervisorModule } from './supervisor/supervisor.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { StudentModule } from './student/student.module';
     AuthModule,
     PdfModule,
     GoogleDriveModule,
+    SupervisorModule,
   ],
   controllers: [ApiController],
   providers: [MyListenerService],
