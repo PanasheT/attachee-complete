@@ -28,7 +28,7 @@ export class SupervisorFactory {
     email?: string;
     phone?: string;
   }): Promise<void> {
-    const deleted: boolean = false;
+    const deleted = false;
     const query: FindSupervisorQuery[] = [
       model.email && { email: model.email, deleted },
       model.phone && { phone: model.phone, deleted },

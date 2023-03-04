@@ -52,7 +52,7 @@ export class SupervisorService {
   private generateFindQuery(
     value: string,
     property: SupervisorIdentificationProperties,
-    deleted: boolean = false
+    deleted = false
   ): FindSupervisorQuery {
     return { [property]: value, deleted };
   }
