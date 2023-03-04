@@ -1,13 +1,16 @@
-import { IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsPhoneNumber,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { CreateSupervisorDto } from 'src/modules/supervisor/dtos';
 
 export class CreateCompanyDto {
   @IsString()
   @IsNotEmpty()
   readonly name: string;
-
-  @IsString()
-  @IsNotEmpty()
-  readonly supervisor: string;
 
   @IsString()
   @IsNotEmpty()
@@ -20,4 +23,9 @@ export class CreateCompanyDto {
   @IsString()
   @IsNotEmpty()
   readonly address: string;
+
+  @Type(() => CreateSupervisorDto)
+  @ValidateNested({ each: true })
+  @IsNotEmpty()
+  readonly supervisor: CreateSupervisorDto;
 }

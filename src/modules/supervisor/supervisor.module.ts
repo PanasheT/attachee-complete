@@ -8,7 +8,7 @@ import { SupervisorService } from './services';
 @Module({
   imports: [TypeOrmModule.forFeature([SupervisorEntity])],
   controllers: [SupervisorController],
-  exports: [SupervisorService],
+  exports: [SupervisorService, SupervisorFactory],
   providers: [SupervisorService, SupervisorFactory],
 })
 export class SupervisorModule {}
