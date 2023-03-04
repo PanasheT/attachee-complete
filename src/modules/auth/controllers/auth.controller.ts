@@ -1,12 +1,13 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   HttpCode,
   HttpStatus,
   NotAcceptableException,
-  Param,
   Post,
   Put,
+  Response,
 } from '@nestjs/common';
 import {
   ApiNoContentResponse,
@@ -55,29 +56,37 @@ export class AuthController {
     await this.service.updateStudentPassword(model);
   }
 
-  @Post('token/:studentUUID')
+  @Post('token/')
   @ApiOperation({ summary: 'Refresh a students token.' })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    description: 'Token refresh successful',
+    description: 'Token refresh successful.',
     type: String,
   })
-  public async refreshToken(
-    @Param('studentUUID') studentUUID: string,
-    @Body() model: { refreshToken: string }
-  ): Promise<string> {
-    return await this.service.refreshToken(studentUUID, model.refreshToken);
+  public async refreshToken(@Response() res: any): Promise<string> {
+    const refreshToken = res.body.refreshToken as string;
+    const studentUUID = res.body.user.uuid as string;
+
+    if (!refreshToken || !studentUUID) {
+      throw new BadRequestException();
+    }
+
+    return await this.service.refreshToken(studentUUID, refreshToken);
   }
 
-  @Put('logout/:studentUUID')
+  @Put('logout')
   @ApiOperation({ summary: 'Logout a student.' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({
     description: 'Student logout successful.',
   })
-  public async logoutStudent(
-    @Param('studentUUID') studentUUID: string
-  ): Promise<void> {
-    await this.service.logoutStudent(studentUUID);
+  public async logoutStudent(@Response() res: any): Promise<void> {
+    const { uuid } = res.body?.user;
+
+    if (!uuid || typeof uuid !== 'string') {
+      throw new BadRequestException();
+    }
+
+    await this.service.logoutStudent(uuid);
   }
 }

@@ -29,15 +29,15 @@ export class AuthFactory {
       return;
     }
 
-    const token: string = await this.generateToken(payload);
+    const accessToken: string = await this.generateToken(payload);
     const refreshToken: string = await this.generateToken(payload, true);
 
     await this.updateStudentRefreshToken(refreshToken, model);
 
     return Object.assign(new StudentLoginResultDto(), {
       student: payload,
+      accessToken,
       refreshToken,
-      token,
     });
   }
 
