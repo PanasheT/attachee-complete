@@ -56,7 +56,7 @@ export class AuthController {
     await this.service.updateStudentPassword(model);
   }
 
-  @Post('token/')
+  @Post('token')
   @ApiOperation({ summary: 'Refresh a students token.' })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
