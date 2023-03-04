@@ -4,7 +4,7 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as fs from 'fs';
-import { ApiDetails, ApiDetailsFactory } from 'src/common';
+import { APIDetails, APIDetailsFactory } from 'src/common';
 
 export function validateUpdate<T>(model: T, update: Partial<T>): Partial<T> {
   const validated: Partial<T> = Object.keys(update).reduce((validated, key) => {
@@ -59,21 +59,21 @@ export async function isPasswordCorrect(
   return await bcrypt.compare(attempt, hash);
 }
 
-export async function getApiDetails(): Promise<ApiDetails> {
+export async function getAPIDetails(): Promise<APIDetails> {
   try {
     const packageJSON = JSON.parse(
       await fs.promises.readFile('package.json', 'utf-8')
     );
 
-    return ApiDetailsFactory(packageJSON);
+    return APIDetailsFactory(packageJSON);
   } catch (error) {
     throw new InternalServerErrorException('Failed to parse package.json');
   }
 }
 
-export async function queryApiDetails(key: keyof ApiDetails): Promise<string> {
+export async function queryAPIDetails(key: keyof APIDetails): Promise<string> {
   try {
-    return getApiDetails()[key];
+    return getAPIDetails()[key];
   } catch (error) {
     throw new InternalServerErrorException('Failed to query package.json');
   }

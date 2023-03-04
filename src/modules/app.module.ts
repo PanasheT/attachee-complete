@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DB_CONFIG } from 'src/common';
+import { ApiController } from './api.controller';
 import { AuthModule } from './auth/auth.module';
 import { CompanyModule } from './company/company.module';
 import { DailyLogModule } from './daily-log/daily-log.module';
@@ -32,6 +33,7 @@ import { StudentModule } from './student/student.module';
     PdfModule,
     GoogleDriveModule,
   ],
+  controllers: [ApiController],
   providers: [MyListenerService],
 })
 export class AppModule {}

@@ -1,4 +1,4 @@
-export interface ApiDetails {
+export interface APIDetails {
   name: string;
   version: string;
   description: string;
@@ -6,13 +6,13 @@ export interface ApiDetails {
   license: string;
 }
 
-export function ApiDetailsFactory({
+export function APIDetailsFactory({
   name,
   version,
   description,
   author,
   license,
-}: any): ApiDetails {
+}: any): APIDetails {
   return {
     name,
     version,
