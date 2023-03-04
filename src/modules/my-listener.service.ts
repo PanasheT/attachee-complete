@@ -18,7 +18,7 @@ export class MyListenerService {
 
   @OnEvent(ProjectLogCreatedEvent, { async: true })
   public async uploadProjectLogToGoogleDrive(model: ProjectLogEntity) {
-    const fileName = `Project_Log_${moment(model.logDate).format(
+    const fileName: string = `Project_Log_${moment(model.logDate).format(
       'DD_MM_YYYY'
     )}`;
 
@@ -30,7 +30,9 @@ export class MyListenerService {
 
   @OnEvent(DailyLogCreatedEvent, { async: true })
   public async uploadDailyLogToGoogleDrive(model: DailyLogEntity) {
-    const fileName = `Daily_Log_${moment(model.checkIn).format('DD_MM_YYYY')}`;
+    const fileName: string = `Daily_Log_${moment(model.checkIn).format(
+      'DD_MM_YYYY'
+    )}`;
 
     const dailyLogWithFileId: DailyLogEntity =
       await this.pdfService.generatePdfByType(model, 'dailyLog', fileName);

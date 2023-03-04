@@ -3,43 +3,17 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import * as fs from 'fs';
 import * as handlebars from 'handlebars';
 import * as html_to_pdf from 'html-pdf-node';
-import * as moment from 'moment';
 import { AbstractEntity } from 'src/common';
 import { DailyLogEntity } from 'src/modules/daily-log/entities';
 import { GoogleDriveService } from 'src/modules/google-drive/services';
 import { ProjectLogEntity } from 'src/modules/project-log/entities';
 import { ProjectEntity } from 'src/modules/project/entities';
 import { StudentEntity } from 'src/modules/student/entities';
-import {
-  DailyLogPdfFactory,
-  ProjectDetailsPdfFactory,
-  StudentDetailsPdfFactory,
-} from '../interfaces';
-import { ProjectLogPdfFactory } from '../interfaces/project-log-pdf';
-import { PdfType, PdfUtility } from '../types';
-
-const PdfFactory: Record<PdfType, PdfUtility> = {
-  studentDetails: {
-    templatePath: 'src/modules/pdf/templates/student-details.hbs',
-    factory: StudentDetailsPdfFactory,
-  },
-  dailyLog: {
-    templatePath: 'src/modules/pdf/templates/daily-log.hbs',
-    factory: DailyLogPdfFactory,
-  },
-  projectLog: {
-    templatePath: 'src/modules/pdf/templates/project-log.hbs',
-    factory: ProjectLogPdfFactory,
-  },
-  projectDetails: {
-    templatePath: 'src/modules/pdf/templates/project-details.hbs',
-    factory: ProjectDetailsPdfFactory,
-  },
-};
+import { PdfFactory } from '../constants';
+import { PdfType } from '../types';
 
 @Injectable()
 export class PdfService {
@@ -47,31 +21,10 @@ export class PdfService {
 
   protected readonly localLogStoragePath: string = 'PDF_LOGS/projects/';
 
-  constructor(
-    private readonly googleDriveService: GoogleDriveService,
-    private readonly emitter: EventEmitter2
-  ) {}
+  constructor(private readonly googleDriveService: GoogleDriveService) {}
 
-  public async saveAndUploadProjectLogToDrive(model: ProjectLogEntity) {
-    const buffer = await this.generatePdfByType(model, 'projectLog');
-
-    const fileName = `Project_Log_${moment(model.logDate).format(
-      'DD_MM_YYYY'
-    )}`;
-
-    await fs.promises.writeFile(
-      `${this.localLogStoragePath}${fileName}.pdf`,
-      buffer
-    );
-
-    await this.googleDriveService.uploadFile(fileName);
-  }
-
-  public async generatePdfByType(
-    model: StudentEntity,
-    key: 'studentDetails',
-    fileName?: string
-  );
+  public async generatePdfByType(model: StudentEntity, key: 'studentDetails');
+  public async generatePdfByType(model: ProjectEntity, key: 'projectDetails');
   public async generatePdfByType(
     model: DailyLogEntity,
     key: 'dailyLog',
@@ -80,11 +33,6 @@ export class PdfService {
   public async generatePdfByType(
     model: ProjectLogEntity,
     key: 'projectLog',
-    fileName?: string
-  );
-  public async generatePdfByType(
-    model: ProjectEntity,
-    key: 'projectDetails',
     fileName?: string
   );
   public async generatePdfByType<T extends AbstractEntity>(
