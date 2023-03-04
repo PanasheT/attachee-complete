@@ -1,7 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UpdateSupervisorDto } from '../dtos';
 import { SupervisorEntity } from '../entities';
+import { SupervisorFactory } from '../factories';
 import {
   FindSupervisorQuery,
   SupervisorIdentificationProperties,
@@ -11,7 +18,8 @@ import {
 export class SupervisorService {
   constructor(
     @InjectRepository(SupervisorEntity)
-    private readonly repo: Repository<SupervisorEntity>
+    private readonly repo: Repository<SupervisorEntity>,
+    private readonly factory: SupervisorFactory
   ) {}
 
   public async findOneSupervsior(
@@ -47,5 +55,40 @@ export class SupervisorService {
     deleted: boolean = false
   ): FindSupervisorQuery {
     return { [property]: value, deleted };
+  }
+
+  public async updateSupervisor(
+    model: UpdateSupervisorDto,
+    uuid: string
+  ): Promise<SupervisorEntity> {
+    const supervisor: SupervisorEntity = await this.findOneSupervisorOrFail(
+      uuid,
+      'uuid'
+    );
+
+    return await this.handleSupervisorSave(
+      await this.getUpdatedSupervisorFromFactory(supervisor, model)
+    );
+  }
+
+  private async getUpdatedSupervisorFromFactory(
+    supervisor: SupervisorEntity,
+    model: UpdateSupervisorDto
+  ): Promise<SupervisorEntity> {
+    try {
+      return this.factory.updateSupervisor(model, supervisor);
+    } catch (error) {
+      throw new HttpException(error?.message, error?.status);
+    }
+  }
+
+  private async handleSupervisorSave(
+    model: SupervisorEntity
+  ): Promise<SupervisorEntity> {
+    try {
+      return await this.repo.save(model);
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to save supervisor.');
+    }
   }
 }
