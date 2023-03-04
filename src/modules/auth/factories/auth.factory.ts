@@ -43,7 +43,7 @@ export class AuthFactory {
 
   public async generateToken(
     payload: StudentDto,
-    refreshToken: boolean = false
+    refreshToken = false
   ): Promise<string> {
     try {
       return await this.jwtService.signAsync(
