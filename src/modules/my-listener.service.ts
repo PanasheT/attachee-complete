@@ -17,13 +17,20 @@ export class MyListenerService {
   ) {}
 
   @OnEvent(ProjectLogCreatedEvent, { async: true })
-  public async uploadProjectLogToGoogleDrive(model: ProjectLogEntity) {
-    const fileName = `Project_Log_${moment(model.logDate).format(
+  public async uploadProjectLogToGoogleDrive(model: {
+    projectLog: ProjectLogEntity;
+    count: number;
+  }) {
+    const fileName = `Project_Log_${moment(model.projectLog.logDate).format(
       'DD_MM_YYYY'
-    )}`;
+    )}_${model.count + 1}`;
 
     const projectLogWithFileId: ProjectLogEntity =
-      await this.pdfService.generatePdfByType(model, 'projectLog', fileName);
+      await this.pdfService.generatePdfByType(
+        model.projectLog,
+        'projectLog',
+        fileName
+      );
 
     await this.projectLogService.addFileIdToProjectLog(projectLogWithFileId);
   }

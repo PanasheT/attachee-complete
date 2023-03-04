@@ -12,19 +12,41 @@ import { GoogleDriveService } from 'src/modules/google-drive/services';
 import { ProjectLogEntity } from 'src/modules/project-log/entities';
 import { ProjectEntity } from 'src/modules/project/entities';
 import { StudentEntity } from 'src/modules/student/entities';
-import { PdfFactory } from '../constants';
-import { PdfType } from '../types';
+import {
+  DailyLogPdfFactory,
+  ProjectDetailsPdfFactory,
+  ProjectLogPdfFactory,
+  StudentDetailsPdfFactory,
+} from '../interfaces';
+import { PdfType, PdfUtility } from '../types';
 
 @Injectable()
 export class PdfService {
   private logger = new Logger(PdfService.name);
 
+  public static readonly PdfFactory: Record<PdfType, PdfUtility> = {
+    studentDetails: {
+      templatePath: 'src/modules/pdf/templates/student-details.hbs',
+      factory: StudentDetailsPdfFactory,
+    },
+    dailyLog: {
+      templatePath: 'src/modules/pdf/templates/daily-log.hbs',
+      factory: DailyLogPdfFactory,
+    },
+    projectLog: {
+      templatePath: 'src/modules/pdf/templates/project-log.hbs',
+      factory: ProjectLogPdfFactory,
+    },
+    projectDetails: {
+      templatePath: 'src/modules/pdf/templates/project-details.hbs',
+      factory: ProjectDetailsPdfFactory,
+    },
+  };
+
   protected readonly localLogStoragePath: string = 'PDF_LOGS/projects/';
 
   constructor(private readonly googleDriveService: GoogleDriveService) {}
 
-  public async generatePdfByType(model: StudentEntity, key: 'studentDetails');
-  public async generatePdfByType(model: ProjectEntity, key: 'projectDetails');
   public async generatePdfByType(
     model: DailyLogEntity,
     key: 'dailyLog',
@@ -35,13 +57,15 @@ export class PdfService {
     key: 'projectLog',
     fileName?: string
   );
+  public async generatePdfByType(model: StudentEntity, key: 'studentDetails');
+  public async generatePdfByType(model: ProjectEntity, key: 'projectDetails');
   public async generatePdfByType<T extends AbstractEntity>(
     model: T,
     key: PdfType,
     fileName: string = undefined
   ) {
     try {
-      const { templatePath, factory } = PdfFactory[key];
+      const { templatePath, factory } = PdfService.PdfFactory[key];
 
       const template = handlebars.compile(
         await fs.promises.readFile(templatePath, 'utf8')
@@ -79,8 +103,9 @@ export class PdfService {
       const fileId: string = await this.googleDriveService.uploadFile(fileName);
       return Object.assign(model, { fileId });
     } catch (error) {
-      this.logger.error(error?.message || error);
-      throw new InternalServerErrorException('Failed to upload PDF.');
+      this.logger.error(
+        `Failed to upload pdf with error ${error?.message || error}`
+      );
     }
   }
 }

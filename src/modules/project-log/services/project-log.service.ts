@@ -9,7 +9,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectEntity } from 'src/modules/project/entities';
 import { ProjectService } from 'src/modules/project/services';
-import { Repository } from 'typeorm';
+import { getStartAndEndOfDate } from 'src/util';
+import { Between, IsNull, Repository } from 'typeorm';
 import { CreateProjectLogDto } from '../dtos';
 import { ProjectLogEntity } from '../entities';
 import { ProjectLogFactory } from '../factories';
@@ -94,5 +95,18 @@ export class ProjectLogService {
     }
 
     return await this.handleProjectLogSave(model);
+  }
+
+  public async findProjectLogsByDate(
+    arg: Date
+  ): Promise<{ projectLogs: ProjectLogEntity[]; count: number }> {
+    const { startOfLogDate, endOfLogDate } = getStartAndEndOfDate(arg);
+
+    const [projectLogs, count] = await this.repo.findAndCountBy({
+      logDate: Between(startOfLogDate, endOfLogDate),
+      deleted: IsNull(),
+    });
+
+    return { projectLogs, count };
   }
 }

@@ -1,13 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
-import { google } from 'googleapis';
+import { drive_v3, google } from 'googleapis';
 
 @Injectable()
 export class GoogleDriveService {
   private logger = new Logger(GoogleDriveService.name);
 
   private readonly scopes = ['https://www.googleapis.com/auth/drive'];
+
+  private readonly localLogStoragePath: string = 'PDF_LOGS/projects/';
 
   constructor(private readonly configService: ConfigService) {}
 
@@ -31,33 +33,42 @@ export class GoogleDriveService {
     try {
       const googleDrive = await this.getGoogleDrive();
 
-      const fileMetadata = {
-        name: `${fileName}.pdf`,
-        mimeType: 'application/pdf',
-        parents: [this.configService.get<string>('GOOGLE_DRIVE_FOLDER_ID')],
-      };
+      if (!googleDrive) return;
 
-      const pdf = fs.createReadStream(`PDF_LOGS/projects/${fileName}.pdf`);
+      const { metadata, pdf } = this.createFileMetadataAndPdfStream(fileName);
 
       const { data } = await googleDrive.files.create({
-        requestBody: fileMetadata,
+        requestBody: metadata,
         media: {
           mimeType: 'application/pdf',
           body: pdf,
         },
       });
 
-      const fileId: string = data?.id;
-
-      this.logger.log(
-        `Successful: file uplaoded with id: ${fileId} to email: ${this.configService.get<string>(
-          'GOOGLE_DRIVE_SHARED_FOLDER_EMAIL'
-        )}`
-      );
-
-      return fileId;
+      return data?.id;
     } catch (error) {
       this.logger.error(`Failed: File ${fileName} upload error: ${error}`);
     }
+  }
+
+  private createFileMetadataAndPdfStream(fileName: string): {
+    metadata: drive_v3.Schema$File;
+    pdf: fs.ReadStream;
+  } {
+    const description = fileName.startsWith('Project_Log')
+      ? 'Project Log summary for a specific project. Details include tasks completed, the log date and notes.'
+      : fileName.startsWith('Daily_Log')
+      ? 'Daily (Attachment) Log for specified date. Details include a description of the tasks performed, difficulties faced, notes and check-in/check-out times.'
+      : null;
+
+    return {
+      metadata: {
+        description,
+        name: `${fileName}.pdf`,
+        mimeType: 'application/pdf',
+        parents: [this.configService.get<string>('GOOGLE_DRIVE_FOLDER_ID')],
+      },
+      pdf: fs.createReadStream(`${this.localLogStoragePath}${fileName}.pdf`),
+    };
   }
 }
