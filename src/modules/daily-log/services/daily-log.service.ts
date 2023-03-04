@@ -45,6 +45,12 @@ export class DailyLogService {
     const student: StudentEntity =
       await this.studentService.findOneStudentOrFail(studentUUID, 'uuid');
 
+    if (!student?.company) {
+      throw new BadRequestException(
+        "Can't make daily log for unattached student."
+      );
+    }
+
     return await this.handleDailyLogSave(
       await this.getDailyLogFromFactory(dto, student)
     );
