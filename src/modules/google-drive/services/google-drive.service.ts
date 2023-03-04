@@ -27,7 +27,7 @@ export class GoogleDriveService {
     }
   }
 
-  public async uploadFile(fileName: string) {
+  public async uploadFile(fileName: string): Promise<string> {
     try {
       const googleDrive = await this.getGoogleDrive();
 
@@ -54,6 +54,8 @@ export class GoogleDriveService {
           'GOOGLE_DRIVE_SHARED_FOLDER_EMAIL'
         )}`
       );
+
+      return fileId;
     } catch (error) {
       this.logger.error(`Failed: File ${fileName} upload error: ${error}`);
     }

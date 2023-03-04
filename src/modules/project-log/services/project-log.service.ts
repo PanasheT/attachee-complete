@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   Injectable,
   InternalServerErrorException,
@@ -83,5 +84,15 @@ export class ProjectLogService {
       this.logger.error(error?.message || error);
       throw new InternalServerErrorException('Failed to save project log.');
     }
+  }
+
+  public async addFileIdToProjectLog(
+    model: ProjectLogEntity
+  ): Promise<ProjectLogEntity> {
+    if (!model.fileId) {
+      throw new BadRequestException('Missing File Id');
+    }
+
+    return await this.handleProjectLogSave(model);
   }
 }

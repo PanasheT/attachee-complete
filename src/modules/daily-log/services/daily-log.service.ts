@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpException,
   Injectable,
   InternalServerErrorException,
@@ -89,5 +90,15 @@ export class DailyLogService {
     } catch (error) {
       throw new HttpException(error?.message, error?.status);
     }
+  }
+
+  public async addFileIdToDailyLog(
+    model: DailyLogEntity
+  ): Promise<DailyLogEntity> {
+    if (!model?.fileId) {
+      throw new BadRequestException('Missing File Id.');
+    }
+
+    return await this.handleDailyLogSave(model);
   }
 }
