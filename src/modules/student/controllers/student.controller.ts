@@ -18,7 +18,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Response } from 'express';
-import { Public } from 'src/decorators';
 import { PdfService } from 'src/modules/pdf/services';
 import { Readable } from 'stream';
 import {
@@ -52,7 +51,6 @@ export class StudentController {
     return StudentDtoFactory(student);
   }
 
-  @Public()
   @Get()
   @ApiOperation({ summary: 'Retrieve all students.' })
   @HttpCode(HttpStatus.OK)

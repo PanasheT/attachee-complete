@@ -15,6 +15,7 @@ import { AuthService } from './services';
   providers: [
     AuthService,
     AuthFactory,
+    JwtGuard,
     {
       provide: APP_GUARD,
       useClass: JwtGuard,

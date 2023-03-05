@@ -6,11 +6,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { APIDetails } from 'src/common';
+import { Public } from 'src/decorators';
 import { getAPIDetails, queryAPIDetails } from 'src/util';
 
 @Controller('api')
 @ApiTags('api')
 export class ApiController {
+  @Public()
   @Get('details')
   @ApiOperation({ summary: 'Get API details.' })
   @HttpCode(HttpStatus.FOUND)
@@ -21,6 +23,7 @@ export class ApiController {
     return getAPIDetails();
   }
 
+  @Public()
   @Get('detail')
   @ApiOperation({ summary: 'Query API details.' })
   @HttpCode(HttpStatus.OK)

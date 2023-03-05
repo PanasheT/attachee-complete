@@ -15,6 +15,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { Public } from 'src/decorators';
 import {
   StudentLoginDto,
   StudentLoginResultDto,
@@ -27,7 +28,8 @@ import { AuthService } from '../services';
 export class AuthController {
   constructor(private readonly service: AuthService) {}
 
-  @Post()
+  @Public()
+  @Post('login')
   @ApiOperation({ summary: 'Login a student.' })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
@@ -40,7 +42,7 @@ export class AuthController {
     return this.service.loginStudent(model);
   }
 
-  @Post('password-update')
+  @Put('password-update')
   @ApiOperation({ summary: 'Update a specific students password.' })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({

@@ -13,7 +13,6 @@ import { DailyLogService } from './services';
     TypeOrmModule.forFeature([DailyLogEntity]),
     StudentModule,
     PdfModule,
-    DailyLogModule,
   ],
   controllers: [DailyLogController],
   exports: [DailyLogService],

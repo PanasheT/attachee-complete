@@ -7,11 +7,9 @@ export const JWT_CONFIG: any = {
     secret: config.get<string>('TOKEN_SECRET'),
     signOptions: {
       expiresIn: config.get<number>('TOKEN_DURATION'),
-      algorithm: 'HS512',
     },
     verifyOptions: {
       ignoreExpiration: false,
-      algorithms: ['HS512'],
     },
   }),
 };
