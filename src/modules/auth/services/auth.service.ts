@@ -50,6 +50,8 @@ export class AuthService {
     const student: StudentEntity =
       await this.studentService.findOneStudentOrFail(studentUUID, 'uuid');
 
+    console.log(student.password);
+
     await this.comparePasswords(oldPassword, student.password);
 
     await this.studentService.updateStudentPassword(student, newPassword);
