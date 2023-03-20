@@ -7,12 +7,14 @@ import { DailyLogController } from './controllers';
 import { DailyLogEntity } from './entities';
 import { DailyLogFactory } from './factories';
 import { DailyLogService } from './services';
+import { GitCommitModule } from './../git-commit/git-commit.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([DailyLogEntity]),
+  TypeOrmModule.forFeature([DailyLogEntity]),
     StudentModule,
     PdfModule,
+    GitCommitModule
   ],
   controllers: [DailyLogController],
   exports: [DailyLogService],

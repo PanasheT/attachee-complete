@@ -1,5 +1,7 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { GitCommitEntity } from 'src/modules/git-commit/entities';
+import { GitCommitFactory } from 'src/modules/git-commit/factories';
 import { StudentEntity } from 'src/modules/student/entities';
 import {
   areDatesTheSame,
@@ -14,7 +16,8 @@ import { DailyLogEntity } from '../entities';
 export class DailyLogFactory {
   constructor(
     @InjectRepository(DailyLogEntity)
-    private readonly repo: Repository<DailyLogEntity>
+    private readonly repo: Repository<DailyLogEntity>,
+    private readonly gitCommitFactory: GitCommitFactory
   ) {}
 
   public async createDailyLog(
@@ -24,7 +27,15 @@ export class DailyLogFactory {
     this.assertDatesAreValid(model.checkIn, model.checkOut);
     await this.assertDailyLogDailyLimit(model.checkIn, student.uuid);
 
-    return Object.assign(new DailyLogEntity(), { student, ...model });
+    const gitCommits: GitCommitEntity[] = await this.createGitCommits(
+      model.gitCommits
+    );
+
+    return Object.assign(new DailyLogEntity(), {
+      student,
+      gitCommits,
+      ...model,
+    });
   }
 
   private assertDatesAreValid(checkIn: Date, checkOut: Date): void {
@@ -59,6 +70,18 @@ export class DailyLogFactory {
         'Maximum of Five (5) Daily Logs per day.'
       );
     }
+  }
+
+  private async createGitCommits(
+    gitCommits: CreateDailyLogDto['gitCommits']
+  ): Promise<GitCommitEntity[]> {
+    if (!gitCommits || gitCommits.length === 0) return null;
+
+    return await Promise.all(
+      gitCommits.map(async (gitCommit) =>
+        this.gitCommitFactory.createGitCommit(gitCommit, null)
+      )
+    );
   }
 
   public async updateDailyLog(

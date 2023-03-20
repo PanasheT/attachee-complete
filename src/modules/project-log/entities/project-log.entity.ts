@@ -15,7 +15,7 @@ export type Task = {
   hoursWorked: number;
 };
 
-@Entity({ name: 'project-log' })
+@Entity({ name: 'project_log' })
 export class ProjectLogEntity extends AbstractEntity {
   @Column({ type: 'jsonb' })
   tasks: Task[];

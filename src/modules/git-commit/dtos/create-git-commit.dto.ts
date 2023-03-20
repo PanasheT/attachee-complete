@@ -1,3 +1,4 @@
+import { OmitType } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateGitCommitDto {
@@ -13,3 +14,7 @@ export class CreateGitCommitDto {
   @IsOptional()
   readonly commitMessage: string;
 }
+
+export class CreateGitCommit extends OmitType(CreateGitCommitDto, [
+  'dailyLogUUID',
+] as const) {}

@@ -1,5 +1,6 @@
 import * as moment from 'moment';
 import { DailyLogEntity } from 'src/modules/daily-log/entities';
+import { GitCommitPdf, GitCommitPdfFactory } from './git-commit-pdf';
 
 export interface DailyLogPdf {
   company: string;
@@ -10,6 +11,7 @@ export interface DailyLogPdf {
   description: string;
   notes: string;
   difficulties: string;
+  gitCommits: GitCommitPdf[];
 }
 
 export function DailyLogPdfFactory(model: DailyLogEntity): DailyLogPdf {
@@ -22,5 +24,8 @@ export function DailyLogPdfFactory(model: DailyLogEntity): DailyLogPdf {
     description: model.description,
     notes: model.comment,
     difficulties: model.difficulties,
+    gitCommits: model?.gitCommits
+      ? model.gitCommits.map(GitCommitPdfFactory)
+      : [],
   };
 }

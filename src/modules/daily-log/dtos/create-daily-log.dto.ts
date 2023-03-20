@@ -1,10 +1,17 @@
+import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsDate,
   IsNotEmpty,
   IsOptional,
   IsString,
   IsUUID,
+  ValidateNested,
 } from 'class-validator';
+import {
+  CreateGitCommit,
+  CreateGitCommitDto,
+} from 'src/modules/git-commit/dtos';
 
 export class CreateDailyLogDto {
   @IsUUID()
@@ -30,4 +37,9 @@ export class CreateDailyLogDto {
   @IsString()
   @IsOptional()
   readonly comment?: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateGitCommit)
+  readonly gitCommits?: CreateGitCommitDto[];
 }
