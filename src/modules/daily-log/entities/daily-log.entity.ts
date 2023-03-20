@@ -33,7 +33,8 @@ export class DailyLogEntity extends AbstractEntity {
 
   @OneToMany(
     () => GitCommitEntity,
-    (gitCommit: GitCommitEntity) => gitCommit.dailyLog
+    (gitCommit: GitCommitEntity) => gitCommit.dailyLog,
+    { cascade: true }
   )
   gitCommits: GitCommitEntity[];
 }
