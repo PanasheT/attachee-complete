@@ -50,8 +50,6 @@ export class AuthService {
     const student: StudentEntity =
       await this.studentService.findOneStudentOrFail(studentUUID, 'uuid');
 
-    console.log(student.password);
-
     await this.comparePasswords(oldPassword, student.password);
 
     await this.studentService.updateStudentPassword(student, newPassword);
@@ -100,7 +98,7 @@ export class AuthService {
         refreshToken: null,
       });
 
-      await this.studentService.studentUpdateFromAuth(student);
+      await this.studentService.updateStudentRefreshToken(student);
     } catch (error) {
       throw new InternalServerErrorException('Logout operation unhandled.');
     }

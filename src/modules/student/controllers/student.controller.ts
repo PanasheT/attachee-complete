@@ -1,24 +1,6 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Header,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  Put,
-  Res,
-} from '@nestjs/common';
-import {
-  ApiCreatedResponse,
-  ApiFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { Public } from 'src/decorators';
 import { PdfService } from 'src/modules/pdf/services';
 import { Readable } from 'stream';
 import {
@@ -38,14 +20,8 @@ export class StudentController {
     private readonly pdfService: PdfService
   ) {}
 
-  @Public()
   @Post()
   @ApiOperation({ summary: 'Create a new student.' })
-  @HttpCode(HttpStatus.CREATED)
-  @ApiCreatedResponse({
-    description: 'The student has been successfully created.',
-    type: StudentDto,
-  })
   public async createNewStudent(
     @Body() model: CreateStudentDto
   ): Promise<StudentDto> {
@@ -55,11 +31,6 @@ export class StudentController {
 
   @Get()
   @ApiOperation({ summary: 'Retrieve all students.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Students successfully retrieved.',
-    type: [StudentDto],
-  })
   public async findAllStudents(): Promise<StudentDto[]> {
     const students = await this.service.findAllStudents();
     return students.map(StudentDtoFactory);
@@ -67,11 +38,6 @@ export class StudentController {
 
   @Get(':uuid')
   @ApiOperation({ summary: 'Retrieve a specific student by uuid.' })
-  @HttpCode(HttpStatus.FOUND)
-  @ApiFoundResponse({
-    description: 'Student successfully retrieved.',
-    type: StudentDto,
-  })
   public async findOneStudent(
     @Param('uuid') uuid: string
   ): Promise<StudentDto> {
@@ -81,11 +47,6 @@ export class StudentController {
 
   @Put(':uuid')
   @ApiOperation({ summary: 'Update a specific student by uuid.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Student updated successfully.',
-    type: StudentDto,
-  })
   public async updateStudent(
     @Param('uuid') uuid: string,
     @Body() model: UpdateStudentDto
@@ -98,11 +59,6 @@ export class StudentController {
   @ApiOperation({
     summary: 'Get a pdf summarising the details of a specific stuednt by uuid.',
   })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Student details pdf successfully created.',
-  })
-  @Header('content-type', 'application/pdf')
   public async getStudentDetailsPdf(
     @Param('uuid') uuid: string,
     @Res() response: Response
@@ -117,6 +73,10 @@ export class StudentController {
       'studentDetails'
     );
 
+    if (!buffer) {
+      return null;
+    }
+
     const stream = new Readable();
     stream.push(buffer);
     stream.push(null);
@@ -124,6 +84,7 @@ export class StudentController {
     response.set({
       'Content-Type': 'application/pdf',
       'Content-Length': buffer.length,
+      'Content-Disposition': `attachment; filename="student_details_${student.regNumber}"`,
     });
 
     return stream.pipe(response);

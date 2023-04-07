@@ -23,22 +23,22 @@ export class AuthFactory {
   public async generateSuccessfulLoginResult(
     model: StudentEntity
   ): Promise<StudentLoginResultDto> {
-    const payload: StudentDto = StudentDtoFactory(model);
+    const jwtPayload: StudentDto = StudentDtoFactory(model);
 
-    if (!payload) {
+    if (!jwtPayload) {
       return;
     }
 
-    const accessToken: string = await this.generateToken(payload);
-    const refreshToken: string = await this.generateToken(payload, true);
+    const accessToken: string = await this.generateToken(jwtPayload);
+    const refreshToken: string = await this.generateToken(jwtPayload, true);
 
     await this.updateStudentRefreshToken(refreshToken, model);
 
-    return Object.assign(new StudentLoginResultDto(), {
-      student: payload,
+    return {
+      student: jwtPayload,
       accessToken,
       refreshToken,
-    });
+    };
   }
 
   public async generateToken(
@@ -51,8 +51,8 @@ export class AuthFactory {
         {
           secret: this.configService.get<string>('TOKEN_SECRET'),
           expiresIn: !!refreshToken
-            ? '7d'
-            : this.configService.get<number>('TOKEN_DURATION'),
+            ? this.configService.get<number>('REFRESH_TOKEN_DURATION')
+            : this.configService.get<number>('ACCESS_TOKEN_DURATION'),
         }
       );
     } catch (error) {
@@ -66,8 +66,7 @@ export class AuthFactory {
     model: StudentEntity
   ): Promise<void> {
     try {
-      const student: StudentEntity = Object.assign(model, { refreshToken });
-      await this.studentService.studentUpdateFromAuth(student);
+      await this.studentService.updateStudentRefreshToken(model, refreshToken);
     } catch (error) {
       this.logger.error(error?.message || error);
       throw new InternalServerErrorException('Unexpected auth failure.');

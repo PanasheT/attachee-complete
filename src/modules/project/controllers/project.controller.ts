@@ -1,22 +1,5 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Header,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  Put,
-  Res,
-} from '@nestjs/common';
-import {
-  ApiCreatedResponse,
-  ApiFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { PdfService } from 'src/modules/pdf/services';
 import { Readable } from 'stream';
@@ -39,11 +22,6 @@ export class ProjectController {
 
   @Post()
   @ApiOperation({ summary: 'Create a project.' })
-  @HttpCode(HttpStatus.CREATED)
-  @ApiCreatedResponse({
-    description: 'Project successfully created.',
-    type: ProjectDto,
-  })
   public async createProject(
     @Body() model: CreateProjectDto
   ): Promise<ProjectDto> {
@@ -53,11 +31,6 @@ export class ProjectController {
 
   @Get()
   @ApiOperation({ summary: 'Retrieve all projects.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Projects successfully retrieved.',
-    type: [ProjectDto],
-  })
   public async findAllProjects(): Promise<ProjectDto[]> {
     const projects = await this.service.findAllProjects();
     return projects.map(ProjectDtoFactory);
@@ -65,11 +38,6 @@ export class ProjectController {
 
   @Get(':uuid')
   @ApiOperation({ summary: 'Retrieve a specific project by uuid.' })
-  @HttpCode(HttpStatus.FOUND)
-  @ApiFoundResponse({
-    description: 'Project successfully retrieved.',
-    type: ProjectDto,
-  })
   public async findOneProject(
     @Param('uuid') uuid: string
   ): Promise<ProjectDto> {
@@ -79,11 +47,6 @@ export class ProjectController {
 
   @Put(':uuid')
   @ApiOperation({ summary: 'Update a specific project by uuid.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Project successfully updated.',
-    type: ProjectDto,
-  })
   public async updateProject(
     @Param('uuid') uuid: string,
     @Body() model: UpdateProjectDto
@@ -98,11 +61,6 @@ export class ProjectController {
 
   @Get(':uuid/summary')
   @ApiOperation({ summary: 'Get a summary of the projetc as a pdf.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Project details pdf successfully created.',
-  })
-  @Header('content-type', 'application/pdf')
   public async getProjectDetailsPdf(
     @Param('uuid') uuid: string,
     @Res() response: Response
@@ -112,10 +70,14 @@ export class ProjectController {
       'uuid'
     );
 
-    const buffer = await this.pdfService.generatePdfByType(
+    const buffer: Buffer = await this.pdfService.generatePdfByType(
       project,
       'projectDetails'
     );
+
+    if (!buffer) {
+      return null;
+    }
 
     const stream = new Readable();
     stream.push(buffer);
@@ -124,6 +86,7 @@ export class ProjectController {
     response.set({
       'Content-Type': 'application/pdf',
       'Content-Length': buffer.length,
+      'Content-Disposition': `attachment; filename="project_details_${project.name}"`,
     });
 
     return stream.pipe(response);

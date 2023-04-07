@@ -1,20 +1,5 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
-import {
-  ApiCreatedResponse,
-  ApiFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   CompanyDto,
   CompanyDtoFactory,
@@ -31,11 +16,6 @@ export class CompanyController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new company.' })
-  @HttpCode(HttpStatus.CREATED)
-  @ApiCreatedResponse({
-    description: 'Company created successfully',
-    type: CompanyDto,
-  })
   public async createCompany(
     @Body() model: CreateCompanyDto
   ): Promise<CompanyDto> {
@@ -46,11 +26,6 @@ export class CompanyController {
 
   @Get()
   @ApiOperation({ summary: 'Retrieve all companies.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Companys successfully retrieved.',
-    type: [CompanyDto],
-  })
   public async findAllCompanies(): Promise<CompanyDto[]> {
     const companies = await this.service.findAllCompanies();
     return companies.map(CompanyDtoFactory);
@@ -58,11 +33,6 @@ export class CompanyController {
 
   @Get(':uuid')
   @ApiOperation({ summary: 'Retrieve a specific company by uuid.' })
-  @HttpCode(HttpStatus.FOUND)
-  @ApiFoundResponse({
-    description: 'Company successfully retrieved.',
-    type: CompanyDto,
-  })
   public async findOneCompany(
     @Param('uuid') uuid: string
   ): Promise<CompanyDto> {
@@ -72,11 +42,6 @@ export class CompanyController {
 
   @Put(':uuid')
   @ApiOperation({ summary: 'Update a specific company by uuid.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Company successfully updated.',
-    type: CompanyDto,
-  })
   public async updateCompany(
     @Param('uuid') uuid: string,
     @Body() model: UpdateCompanyDto
@@ -91,10 +56,6 @@ export class CompanyController {
 
   @Put(':uuid/student/:studentUUID')
   @ApiOperation({ summary: 'Add a student to a company.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Student successfully added to company.',
-  })
   public async addStudentToCompany(
     @Param('uuid') uuid: string,
     @Param('studentUUID') studentUUID: string
@@ -104,10 +65,6 @@ export class CompanyController {
 
   @Put(':uuid/student/:studentUUID/remove')
   @ApiOperation({ summary: 'Remove a student from a company.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Student successfully removed from company.',
-  })
   public async removeStudentFromCompany(
     @Param('uuid') uuid: string,
     @Param('studentUUID') studentUUID: string

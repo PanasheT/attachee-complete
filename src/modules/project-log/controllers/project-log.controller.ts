@@ -1,22 +1,7 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Header,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  Res,
-} from '@nestjs/common';
-import {
-  ApiCreatedResponse,
-  ApiFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
+import * as moment from 'moment';
 import { PdfService } from 'src/modules/pdf/services/pdf.service';
 import { Readable } from 'stream';
 import {
@@ -37,10 +22,6 @@ export class ProjectLogController {
 
   @Post()
   @ApiOperation({ summary: 'Create a project log.' })
-  @HttpCode(HttpStatus.CREATED)
-  @ApiCreatedResponse({
-    description: 'Project log successfully created.',
-  })
   public async createProjectLog(
     @Body() model: CreateProjectLogDto
   ): Promise<ProjectLogDto> {
@@ -53,11 +34,6 @@ export class ProjectLogController {
 
   @Get()
   @ApiOperation({ summary: 'Retrieve all project logs.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'ProjectLogs successfully retrieved.',
-    type: [ProjectLogDto],
-  })
   public async findAllProjectLogs(): Promise<ProjectLogDto[]> {
     const projectLogs = await this.service.findAllProjectLogs();
     return projectLogs.map(ProjectLogDtoFactory);
@@ -65,11 +41,6 @@ export class ProjectLogController {
 
   @Get(':uuid')
   @ApiOperation({ summary: 'Retrieve a specific project log by uuid.' })
-  @HttpCode(HttpStatus.FOUND)
-  @ApiFoundResponse({
-    description: 'ProjectLog successfully retrieved.',
-    type: ProjectLogDto,
-  })
   public async findOneProjectLog(
     @Param('uuid') uuid: string
   ): Promise<ProjectLogDto> {
@@ -79,11 +50,6 @@ export class ProjectLogController {
 
   @Get(':uuid/summary')
   @ApiOperation({ summary: 'Generate a pdf summary for a project log.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'PDF successfully generated',
-  })
-  @Header('content-type', 'application/pdf')
   public async generateProjectLogPdfSummary(
     @Param('uuid') uuid: string,
     @Res() response: Response
@@ -96,6 +62,10 @@ export class ProjectLogController {
       'projectLog'
     );
 
+    if (!buffer) {
+      return null;
+    }
+
     const stream = new Readable();
     stream.push(buffer);
     stream.push(null);
@@ -103,6 +73,9 @@ export class ProjectLogController {
     response.set({
       'Content-Type': 'application/pdf',
       'Content-Length': buffer.length,
+      'Content-Disposition': `attachment; filename="project_log_${
+        projectLog.project.name
+      }_${moment(projectLog.logDate).format('DD/MM/YY')}.pdf"`,
     });
 
     return stream.pipe(response);

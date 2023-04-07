@@ -2,8 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
-  HttpStatus,
   NotAcceptableException,
   Param,
   Patch,
@@ -11,13 +9,7 @@ import {
   Put,
   Res,
 } from '@nestjs/common';
-import {
-  ApiCreatedResponse,
-  ApiFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
 import * as moment from 'moment';
@@ -42,11 +34,6 @@ export class DailyLogController {
 
   @Post()
   @ApiOperation({ summary: 'Create a daily log.' })
-  @HttpCode(HttpStatus.CREATED)
-  @ApiCreatedResponse({
-    description: 'Daily log successfully created.',
-    type: DailyLogDto,
-  })
   public async createDailyLog(
     @Body() model: CreateDailyLogDto
   ): Promise<DailyLogDto> {
@@ -57,11 +44,6 @@ export class DailyLogController {
 
   @Get()
   @ApiOperation({ summary: 'Retrieve all daily logs.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Daily logs successfully retrieved.',
-    type: [DailyLogDto],
-  })
   public async findAllDailyLogs(): Promise<DailyLogDto[]> {
     const dailyLogs = await this.service.findAllDailyLogs();
     return dailyLogs.map(DailyLogDtoFactory);
@@ -69,11 +51,6 @@ export class DailyLogController {
 
   @Get(':uuid')
   @ApiOperation({ summary: 'Retrieve a specific daily log by uuid.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiFoundResponse({
-    description: 'Daily log successfully retrieved.',
-    type: DailyLogDto,
-  })
   public async findOneDailyLog(
     @Param('uuid') uuid: string
   ): Promise<DailyLogDto> {
@@ -83,11 +60,6 @@ export class DailyLogController {
 
   @Put(':uuid')
   @ApiOperation({ summary: 'Update a specific daily log by uuid.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Daily log updated successfully.',
-    type: DailyLogDto,
-  })
   public async updateDailyLog(
     @Param('uuid') uuid: string,
     @Body() model: UpdateDailyLogDto
@@ -102,10 +74,6 @@ export class DailyLogController {
 
   @Get(':uuid/summary')
   @ApiOperation({ summary: 'Generate a pdf summary for a daily log.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'PDF successfully generated',
-  })
   public async generateProjectLogPdfSummary(
     @Param('uuid') uuid: string,
     @Res() response: Response
@@ -144,10 +112,6 @@ export class DailyLogController {
 
   @Patch(':uuid')
   @ApiOperation({ summary: 'Mark a daily log as deleted' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Daily log successfully deleted.',
-  })
   public async deleteDailyLog(@Param('uuid') uuid: string): Promise<void> {
     await this.service.deleteDailyLog(uuid);
   }

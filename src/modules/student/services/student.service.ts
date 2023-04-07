@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -143,7 +144,15 @@ export class StudentService {
     await this.handleStudentSave(student);
   }
 
-  public async studentUpdateFromAuth(student: StudentEntity): Promise<void> {
+  public async updateStudentRefreshToken(
+    student: StudentEntity,
+    refreshToken: string = undefined
+  ): Promise<void> {
+    if (student.refreshToken && refreshToken) {
+      throw new NotAcceptableException('Student session has not expired.');
+    }
+
+    student.refreshToken = !!refreshToken ? refreshToken : null;
     await this.handleStudentSave(student);
   }
 }

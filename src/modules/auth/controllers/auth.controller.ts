@@ -2,19 +2,14 @@ import {
   BadRequestException,
   Body,
   Controller,
-  HttpCode,
-  HttpStatus,
   NotAcceptableException,
   Post,
   Put,
+  Res,
   Response,
 } from '@nestjs/common';
-import {
-  ApiNoContentResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { isUUID } from 'class-validator';
 import { Public } from 'src/decorators';
 import {
   StudentLoginDto,
@@ -31,23 +26,14 @@ export class AuthController {
   @Public()
   @Post('login')
   @ApiOperation({ summary: 'Login a student.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Student successfully logged in.',
-    type: StudentLoginResultDto,
-  })
   public async loginStudent(
     @Body() model: StudentLoginDto
   ): Promise<StudentLoginResultDto> {
     return this.service.loginStudent(model);
   }
 
-  @Put('password-update')
-  @ApiOperation({ summary: 'Update a specific students password.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Student password update successfully',
-  })
+  @Put('reset')
+  @ApiOperation({ summary: 'Update a students password.' })
   public async updateStudentPassword(
     @Body() model: UpdateStudentPasswordDto
   ): Promise<void> {
@@ -58,13 +44,8 @@ export class AuthController {
     await this.service.updateStudentPassword(model);
   }
 
-  @Post('token')
+  @Post('refresh')
   @ApiOperation({ summary: 'Refresh a students token.' })
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    description: 'Token refresh successful.',
-    type: String,
-  })
   public async refreshToken(@Response() res: any): Promise<string> {
     const refreshToken = res.body.refreshToken as string;
     const studentUUID = res.body.user.uuid as string;
@@ -78,14 +59,10 @@ export class AuthController {
 
   @Put('logout')
   @ApiOperation({ summary: 'Logout a student.' })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiNoContentResponse({
-    description: 'Student logout successful.',
-  })
-  public async logoutStudent(@Response() res: any): Promise<void> {
+  public async logoutStudent(@Res() res: any): Promise<void> {
     const { uuid } = res.body?.user;
 
-    if (!uuid || typeof uuid !== 'string') {
+    if (!uuid || !isUUID(uuid)) {
       throw new BadRequestException();
     }
 
