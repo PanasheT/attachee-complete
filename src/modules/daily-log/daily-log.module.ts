@@ -3,18 +3,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DailyLogSubscriber } from 'src/subscribers';
 import { PdfModule } from '../pdf/pdf.module';
 import { StudentModule } from '../student/student.module';
+import { GitCommitModule } from './../git-commit/git-commit.module';
 import { DailyLogController } from './controllers';
 import { DailyLogEntity } from './entities';
 import { DailyLogFactory } from './factories';
 import { DailyLogService } from './services';
-import { GitCommitModule } from './../git-commit/git-commit.module';
 
 @Module({
   imports: [
-  TypeOrmModule.forFeature([DailyLogEntity]),
+    TypeOrmModule.forFeature([DailyLogEntity]),
     StudentModule,
     PdfModule,
-    GitCommitModule
+    GitCommitModule,
   ],
   controllers: [DailyLogController],
   exports: [DailyLogService],
