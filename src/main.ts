@@ -4,6 +4,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
 import * as basicAuth from 'express-basic-auth';
 import 'reflect-metadata';
+import { getAPIDetails } from 'src/util';
+import { APIDetails } from './common/api-details';
 import { AppModule } from './modules/app.module';
 
 async function bootstrap() {
@@ -31,17 +33,17 @@ async function bootstrap() {
     })
   );
 
+  const apiDetails: APIDetails = await getAPIDetails();
+
   const config = new DocumentBuilder()
-    .setTitle('Attachee Complete')
-    .setDescription(
-      'An attachment log management application built with NestJS and TypeORM.'
-    )
-    .setVersion('0.0.2')
+    .setTitle(apiDetails.name)
+    .setDescription(apiDetails.description)
+    .setVersion(apiDetails.version)
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('api', app, document, {
+  SwaggerModule.setup('doc', app, document, {
     swaggerOptions: { tagsSorter: 'alpha', operationsSorter: 'alpha' },
   });
 
