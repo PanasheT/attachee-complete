@@ -49,7 +49,7 @@ export class DailyLogFactory {
       throw new NotAcceptableException('Check out comes after check in.');
     }
 
-    if (new Date() < checkOut) {
+    if (new Date() < checkOut && !areDatesTheSame(new Date(), checkOut)) {
       throw new NotAcceptableException('Future daily logs are unacceptable.');
     }
   }

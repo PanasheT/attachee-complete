@@ -2,11 +2,11 @@ import {
   Body,
   Controller,
   Get,
-  Header,
   HttpCode,
   HttpStatus,
   NotAcceptableException,
   Param,
+  Patch,
   Post,
   Put,
   Res,
@@ -20,6 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { Response } from 'express';
 
+import * as moment from 'moment';
 import { PdfService } from 'src/modules/pdf/services/pdf.service';
 import { Readable } from 'stream';
 import {
@@ -50,6 +51,7 @@ export class DailyLogController {
     @Body() model: CreateDailyLogDto
   ): Promise<DailyLogDto> {
     const dailyLog: DailyLogEntity = await this.service.createDailyLog(model);
+    console.log(dailyLog);
     return DailyLogDtoFactory(dailyLog);
   }
 
@@ -67,7 +69,7 @@ export class DailyLogController {
 
   @Get(':uuid')
   @ApiOperation({ summary: 'Retrieve a specific daily log by uuid.' })
-  @HttpCode(HttpStatus.FOUND)
+  @HttpCode(HttpStatus.OK)
   @ApiFoundResponse({
     description: 'Daily log successfully retrieved.',
     type: DailyLogDto,
@@ -104,7 +106,6 @@ export class DailyLogController {
   @ApiOkResponse({
     description: 'PDF successfully generated',
   })
-  @Header('content-type', 'application/pdf')
   public async generateProjectLogPdfSummary(
     @Param('uuid') uuid: string,
     @Res() response: Response
@@ -117,20 +118,37 @@ export class DailyLogController {
       throw new NotAcceptableException('Student has no company assigned.');
     }
 
-    const buffer = await this.pdfService.generatePdfByType(
+    const buffer: Buffer = await this.pdfService.generatePdfByType(
       dailyLog,
       'dailyLog'
     );
-    const stream = new Readable();
 
+    if (!buffer) {
+      return null;
+    }
+
+    const stream = new Readable();
     stream.push(buffer);
     stream.push(null);
 
     response.set({
       'Content-Type': 'application/pdf',
       'Content-Length': buffer.length,
+      'Content-Disposition': `attachment; filename="daily_log_${moment(
+        dailyLog.checkIn
+      ).format('DD_MM_YY')}.pdf"`,
     });
 
     return stream.pipe(response);
+  }
+
+  @Patch(':uuid')
+  @ApiOperation({ summary: 'Mark a daily log as deleted' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Daily log successfully deleted.',
+  })
+  public async deleteDailyLog(@Param('uuid') uuid: string): Promise<void> {
+    await this.service.deleteDailyLog(uuid);
   }
 }

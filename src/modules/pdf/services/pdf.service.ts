@@ -63,7 +63,7 @@ export class PdfService {
     model: T,
     key: PdfType,
     fileName: string = undefined
-  ) {
+  ): Promise<Buffer | T> {
     try {
       const { templatePath, factory } = PdfService.PdfFactory[key];
 

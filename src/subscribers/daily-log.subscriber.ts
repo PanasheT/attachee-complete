@@ -14,12 +14,12 @@ export class DailyLogSubscriber {
     this.manager.connection.subscribers.push(this);
   }
 
-  listenTo() {
+  public listenTo() {
     return DailyLogEntity;
   }
 
-  async beforeInsert(event: InsertEvent<DailyLogEntity>): Promise<void> {
-    const projectLog = event.entity as DailyLogEntity;
-    await this.emitter.emitAsync(DailyLogCreatedEvent, projectLog);
+  public async beforeInsert(event: InsertEvent<DailyLogEntity>): Promise<void> {
+    const dailyLog = event.entity as DailyLogEntity;
+    await this.emitter.emitAsync(DailyLogCreatedEvent, dailyLog);
   }
 }

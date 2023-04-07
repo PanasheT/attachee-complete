@@ -8,10 +8,7 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
-import {
-  CreateGitCommit,
-  CreateGitCommitDto,
-} from 'src/modules/git-commit/dtos';
+import { CreateGitCommit } from 'src/modules/git-commit/dtos';
 
 export class CreateDailyLogDto {
   @IsUUID()
@@ -41,5 +38,6 @@ export class CreateDailyLogDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateGitCommit)
-  readonly gitCommits?: CreateGitCommitDto[];
+  @IsOptional()
+  readonly gitCommits?: CreateGitCommit[];
 }

@@ -7,20 +7,20 @@ import { drive_v3, google } from 'googleapis';
 export class GoogleDriveService {
   private logger = new Logger(GoogleDriveService.name);
 
-  private readonly scopes = ['https://www.googleapis.com/auth/drive'];
+  private static readonly scopes = ['https://www.googleapis.com/auth/drive'];
 
-  private readonly localLogStoragePath: string = 'PDF_LOGS/projects/';
+  private static readonly localLogStoragePath: string = 'PDF_LOGS/projects/';
 
   constructor(private readonly configService: ConfigService) {}
 
-  private async getGoogleDrive() {
+  private async getGoogleDrive(): Promise<drive_v3.Drive> {
     try {
       const auth = new google.auth.GoogleAuth({
         credentials: {
           client_email: this.configService.get<string>('GOOGLE_CLIENT_EMAIL'),
           private_key: this.configService.get<string>('GOOGLE_PRIVATE_KEY'),
         },
-        scopes: this.scopes,
+        scopes: GoogleDriveService.scopes,
       });
 
       return google.drive({ version: 'v3', auth });
@@ -37,6 +37,12 @@ export class GoogleDriveService {
 
       const { metadata, pdf } = this.createFileMetadataAndPdfStream(fileName);
 
+      if (!pdf) {
+        throw Error(
+          `Failed to read ${fileName}.pdf from local path. Aborting upload`
+        );
+      }
+
       const { data } = await googleDrive.files.create({
         requestBody: metadata,
         media: {
@@ -47,7 +53,9 @@ export class GoogleDriveService {
 
       return data?.id;
     } catch (error) {
-      this.logger.error(`Failed: File ${fileName} upload error: ${error}`);
+      this.logger.error(
+        `File with name ${fileName} failed upload: File ${fileName} upload error: ${error}`
+      );
     }
   }
 
@@ -68,7 +76,9 @@ export class GoogleDriveService {
         mimeType: 'application/pdf',
         parents: [this.configService.get<string>('GOOGLE_DRIVE_FOLDER_ID')],
       },
-      pdf: fs.createReadStream(`${this.localLogStoragePath}${fileName}.pdf`),
+      pdf: fs.createReadStream(
+        `${GoogleDriveService.localLogStoragePath}${fileName}.pdf`
+      ),
     };
   }
 }

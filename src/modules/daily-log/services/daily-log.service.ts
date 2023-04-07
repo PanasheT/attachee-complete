@@ -107,4 +107,11 @@ export class DailyLogService {
 
     return await this.handleDailyLogSave(model);
   }
+
+  public async deleteDailyLog(uuid: string): Promise<void> {
+    const dailyLog: DailyLogEntity = await this.findOneDailyLogOrFail(uuid);
+    dailyLog.deleted = true;
+
+    await this.handleDailyLogSave(dailyLog);
+  }
 }
