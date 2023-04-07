@@ -41,7 +41,7 @@ export class StudentFactory {
     student: StudentEntity
   ): Promise<StudentEntity> {
     const validatedDto: UpdateStudentDto = validateUpdate(student, model);
-    await this.assertStudentExists(model);
+    await this.assertStudentExists(validatedDto);
     return Object.assign(student, validatedDto);
   }
 

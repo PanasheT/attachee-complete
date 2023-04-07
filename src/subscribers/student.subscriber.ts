@@ -13,7 +13,7 @@ export class StudentSubscriber {
   }
 
   async beforeUpdate(event: UpdateEvent<StudentEntity>): Promise<void> {
-    if (event.entity?.password) {
+    if (event.entity?.password !== event.databaseEntity?.password) {
       event.entity.password = await generateHash(event.entity.password);
     }
   }

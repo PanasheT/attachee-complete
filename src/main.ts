@@ -8,6 +8,7 @@ import { AppModule } from './modules/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -44,6 +45,6 @@ async function bootstrap() {
     swaggerOptions: { tagsSorter: 'alpha', operationsSorter: 'alpha' },
   });
 
-  await app.listen(3000);
+  await app.listen(7000);
 }
 bootstrap();
