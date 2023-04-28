@@ -7,12 +7,14 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   Res,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
 import * as moment from 'moment';
+import * as QRCode from 'qrcode';
 import { PdfService } from 'src/modules/pdf/services/pdf.service';
 import { Readable } from 'stream';
 import {
@@ -32,13 +34,32 @@ export class DailyLogController {
     private readonly pdfService: PdfService
   ) {}
 
+  @Get('/qr-code')
+  public async generateQRCode(
+    @Query('uuid') uuid: string,
+    @Query('size') size: number,
+    @Res() res: Response
+  ) {
+    const dailyLog: DailyLogEntity = await this.service.findOneDailyLogOrFail(
+      uuid
+    );
+    const data = JSON.stringify(DailyLogDtoFactory(dailyLog));
+
+    const qrCodeImage = await QRCode.toDataURL(data, {
+      width: size,
+      height: size,
+    });
+
+    res.setHeader('Content-Type', 'image/png');
+    res.send(Buffer.from(qrCodeImage.split(',')[1], 'base64'));
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create a daily log.' })
   public async createDailyLog(
     @Body() model: CreateDailyLogDto
   ): Promise<DailyLogDto> {
     const dailyLog: DailyLogEntity = await this.service.createDailyLog(model);
-    console.log(dailyLog);
     return DailyLogDtoFactory(dailyLog);
   }
 
