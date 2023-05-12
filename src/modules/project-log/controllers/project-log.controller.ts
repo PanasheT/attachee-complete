@@ -56,15 +56,18 @@ export class ProjectLogController {
     const projectlog = await this.service.findOneProjectLogOrFail(uuid);
     return ProjectLogDtoFactory(projectlog);
   }
-  
+
   @Get('project/:projectUUID')
-  @ApiOperation({ summary: 'Retrieve project logs by project uuid.'})
-  public async findProjectLogsByProjectUUID(@Param('projectUUID') projectUUID: string): Promise<ProjectLogDto[]> {
+  @ApiOperation({ summary: 'Retrieve project logs by project uuid.' })
+  public async findProjectLogsByProjectUUID(
+    @Param('projectUUID') projectUUID: string
+  ): Promise<ProjectLogDto[]> {
     if (!isUUID(projectUUID)) {
       throw new BadRequestException('Invalid uuid.');
     }
-    const projectLogs: ProjectLogEntity[] = await this.service.findProjectLogsByProjectUUID(projectUUID)
-    return projectLogs.map(ProjectLogDtoFactory)
+    const projectLogs: ProjectLogEntity[] =
+      await this.service.findProjectLogsByProjectUUID(projectUUID);
+    return projectLogs.map(ProjectLogDtoFactory);
   }
 
   @Get(':uuid/summary')
