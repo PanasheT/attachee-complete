@@ -1,5 +1,14 @@
-import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { isUUID } from 'class-validator';
 import { Response } from 'express';
 import * as moment from 'moment';
 import { PdfService } from 'src/modules/pdf/services/pdf.service';
@@ -47,6 +56,16 @@ export class ProjectLogController {
     const projectlog = await this.service.findOneProjectLogOrFail(uuid);
     return ProjectLogDtoFactory(projectlog);
   }
+  
+  @Get('project/:projectUUID')
+  @ApiOperation({ summary: 'Retrieve project logs by project uuid.'})
+  public async findProjectLogsByProjectUUID(@Param('projectUUID') projectUUID: string): Promise<ProjectLogDto[]> {
+    if (!isUUID(projectUUID)) {
+      throw new BadRequestException('Invalid uuid.');
+    }
+    const projectLogs: ProjectLogEntity[] = await this.service.findProjectLogsByProjectUUID(projectUUID)
+    return projectLogs.map(ProjectLogDtoFactory)
+  }
 
   @Get(':uuid/summary')
   @ApiOperation({ summary: 'Generate a pdf summary for a project log.' })
@@ -79,5 +98,19 @@ export class ProjectLogController {
     });
 
     return stream.pipe(response);
+  }
+
+  @Get('count/:projectUUID')
+  @ApiOperation({
+    summary: 'Get the number of project logs recorded by project UUID.',
+  })
+  public async getProjectLogCountByProjectUUID(
+    @Param('projectUUID') projectUUID: string
+  ): Promise<number> {
+    if (!isUUID(projectUUID)) {
+      throw new BadRequestException('Invalid uuid.');
+    }
+
+    return await this.service.getProjectLogCountByProjectUUID(projectUUID);
   }
 }

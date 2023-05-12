@@ -109,4 +109,24 @@ export class ProjectLogService {
 
     return { projectLogs, count };
   }
+
+  public async getProjectLogCountByProjectUUID(
+    projectUUID: string
+  ): Promise<number> {
+    const projectLogs: ProjectLogEntity[] = await this.repo.findBy({
+      deleted: false,
+      project: { uuid: projectUUID },
+    });
+
+    return projectLogs?.length;
+  }
+
+  public async findProjectLogsByProjectUUID(
+    projectUUID: string
+  ): Promise<ProjectLogEntity[]> {
+    return await this.repo.findBy({
+      deleted: false,
+      project: { uuid: projectUUID },
+    });
+  }
 }
