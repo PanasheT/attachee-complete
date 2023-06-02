@@ -22,7 +22,7 @@ export class TaskEntity extends AbstractEntity {
   @Column({ enum: TaskStatus })
   status: TaskStatus;
 
-  @Column()
+  @Column('timestamptz')
   dueDate: Date;
 
   @Column({ enum: PriorityEnum })
