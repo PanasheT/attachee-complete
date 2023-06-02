@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { TaskStatus } from '../entities';
 
-export class CreateTaskDto {
+export class CreateProjectTaskDto {
   @IsString()
   @IsNotEmpty()
   name: string;
