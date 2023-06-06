@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -39,7 +40,7 @@ export class TaskService {
     key: TaskStudentSupervisorType
   ): Promise<TaskEntity[]> {
     if (key !== 'student' && key !== 'supervisor') {
-      return;
+      throw new NotAcceptableException("Invalid query key")
     }
 
     const query = { [key]: { uuid, deleted: false }, deleted: false };

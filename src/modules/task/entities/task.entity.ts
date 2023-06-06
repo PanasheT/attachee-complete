@@ -31,6 +31,11 @@ export class TaskEntity extends AbstractEntity {
   @Column({ default: null })
   notes: string;
 
+  //TODO
+  //once task is set to complete, only from supervior
+  @Column({ default: null })
+  feedback: string;
+
   @ManyToOne(() => StudentEntity, { eager: true })
   @JoinColumn()
   student: StudentEntity;
