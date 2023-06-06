@@ -1,7 +1,7 @@
 import { PickType } from '@nestjs/swagger';
 import { ProjectDto, ProjectDtoFactory } from 'src/modules/project/dtos';
 import { ProjectLogEntity } from '../entities';
-import { TaskDto, TaskDtoFactory } from './task.dto';
+import { ProjectTaskDto, ProjectTaskDtoFactory } from './project-task.dto';
 
 export class ProjectLogDto extends PickType(ProjectLogEntity, [
   'uuid',
@@ -9,7 +9,7 @@ export class ProjectLogDto extends PickType(ProjectLogEntity, [
   'logDate',
   'notes',
 ] as const) {
-  tasks: TaskDto[];
+  tasks: ProjectTaskDto[];
   project: ProjectDto;
 }
 
@@ -19,7 +19,7 @@ export function ProjectLogDtoFactory(model: ProjectLogEntity): ProjectLogDto {
     hoursWorked: model.hoursWorked,
     logDate: model.logDate,
     notes: model.notes,
-    tasks: model.tasks.map(TaskDtoFactory),
+    tasks: model.tasks.map(ProjectTaskDtoFactory),
     project: ProjectDtoFactory(model.project),
   };
 }

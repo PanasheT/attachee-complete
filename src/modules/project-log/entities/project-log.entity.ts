@@ -8,7 +8,7 @@ export enum TaskStatus {
   DONE = 'DONE',
 }
 
-export type Task = {
+export type ProjectTask = {
   name: string;
   description: string;
   status: TaskStatus;
@@ -18,7 +18,7 @@ export type Task = {
 @Entity({ name: 'project_log' })
 export class ProjectLogEntity extends AbstractEntity {
   @Column({ type: 'jsonb' })
-  tasks: Task[];
+  tasks: ProjectTask[];
 
   @Column({ type: 'smallint' })
   hoursWorked: number;
