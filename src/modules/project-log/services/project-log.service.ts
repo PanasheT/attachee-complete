@@ -34,7 +34,7 @@ export class ProjectLogService {
     return await this.repo.findBy({ deleted: false });
   }
 
-  public async findProjectLogByProjectUUID(
+  public async findProjectLogsByProjectUUID(
     projectUUID: string
   ): Promise<ProjectLogEntity[]> {
     return await this.repo.findBy({
@@ -119,14 +119,5 @@ export class ProjectLogService {
     });
 
     return projectLogs?.length;
-  }
-
-  public async findProjectLogsByProjectUUID(
-    projectUUID: string
-  ): Promise<ProjectLogEntity[]> {
-    return await this.repo.findBy({
-      deleted: false,
-      project: { uuid: projectUUID },
-    });
   }
 }

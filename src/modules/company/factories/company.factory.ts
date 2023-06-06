@@ -27,7 +27,7 @@ export class CompanyFactory {
       await this.supervisorFactory.createSupervisor(supervisor);
 
     return Object.assign(new CompanyEntity(), {
-      model,
+      ...model,
       supervisor: supervisorEntity,
     });
   }

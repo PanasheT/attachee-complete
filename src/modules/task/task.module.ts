@@ -7,10 +7,7 @@ import { TaskFactory } from './factories';
 import { TaskService } from './services';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([TaskEntity]),
-    StudentModule,
-  ],
+  imports: [TypeOrmModule.forFeature([TaskEntity]), StudentModule],
   controllers: [TaskController],
   exports: [TaskService],
   providers: [TaskService, TaskFactory],

@@ -21,7 +21,7 @@ export class SupervisorFactory {
       phone: model.phone,
     });
 
-    return Object.assign(new SupervisorEntity(), { model });
+    return Object.assign(new SupervisorEntity(), model);
   }
 
   private async assertSupervisorExists(model: {

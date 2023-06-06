@@ -15,8 +15,8 @@ import { ProjectLogModule } from './project-log/project-log.module';
 import { ProjectModule } from './project/project.module';
 import { StudentModule } from './student/student.module';
 import { SupervisorModule } from './supervisor/supervisor.module';
-import { WhatsappModule } from './whatsapp/whatsapp.module';
 import { TaskModule } from './task/task.module';
+import { WhatsappModule } from './whatsapp/whatsapp.module';
 
 @Module({
   imports: [
@@ -37,7 +37,7 @@ import { TaskModule } from './task/task.module';
     GoogleDriveModule,
     SupervisorModule,
     WhatsappModule,
-    TaskModule
+    TaskModule,
   ],
   controllers: [ApiController],
   providers: [MyListenerService],

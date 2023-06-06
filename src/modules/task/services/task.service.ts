@@ -40,7 +40,7 @@ export class TaskService {
     key: TaskStudentSupervisorType
   ): Promise<TaskEntity[]> {
     if (key !== 'student' && key !== 'supervisor') {
-      throw new NotAcceptableException("Invalid query key")
+      throw new NotAcceptableException('Invalid query key');
     }
 
     const query = { [key]: { uuid, deleted: false }, deleted: false };
