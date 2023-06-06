@@ -5,6 +5,7 @@ import {
   NotAcceptableException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { StudentEntity } from 'src/modules/student/entities';
 import { StudentService } from 'src/modules/student/services';
 import { Repository } from 'typeorm';
 import { TaskEntity } from '../entities';
@@ -28,15 +29,31 @@ export class TaskFactory {
       throw new NotAcceptableException('Deadline must be in the future.');
     }
 
-    const student = await this.studentService.findOneStudentOrFail(
-      studentUUID,
-      'uuid'
-    );
+    const student: StudentEntity =
+      await this.studentService.findOneStudentOrFail(studentUUID, 'uuid');
 
+    this.validateTaskAssignment(student, supervisorUUID);
+    await this.assertStudentTaskIsUnique(model, student.uuid);
+
+    return Object.assign(new TaskEntity(), {
+      ...model,
+      student,
+      supervisor: student.company.supervisor,
+    });
+  }
+
+  private validateTaskAssignment(
+    student: StudentEntity,
+    supervisorUUID: string
+  ): void {
     if (!student?.company) {
       throw new BadRequestException(
         'Student is not associated with a company.'
       );
+    }
+
+    if (!student.company?.supervisor) {
+      throw new BadRequestException('Student has not been assigned a company');
     }
 
     if (student.company.supervisor.uuid !== supervisorUUID) {
@@ -44,12 +61,24 @@ export class TaskFactory {
         'Unassociated Supervisor can not assign task.'
       );
     }
+  }
 
-    return Object.assign(new TaskEntity(), {
-      ...model,
-      student,
-      supervisor: student.company.supervisor,
-    });
+  private async assertStudentTaskIsUnique(
+    { title, description }: Pick<CreateTaskDto, 'title' | 'description'>,
+    studentUUID: string
+  ): Promise<void> {
+    const query = {
+      title,
+      description,
+      deleted: false,
+      student: { uuid: studentUUID, deleted: false },
+    };
+
+    if (Boolean(await this.repo.findOneBy(query))) {
+      throw new NotAcceptableException(
+        'Task with given title and description has already been assigned to student'
+      );
+    }
   }
 
   //TODO: update task
