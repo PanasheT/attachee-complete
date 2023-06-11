@@ -16,4 +16,7 @@ export abstract class AbstractAdminEntity extends AbstractEntity {
 
   @Column()
   address: string;
+
+  @Column({ default: null })
+  password: string;
 }

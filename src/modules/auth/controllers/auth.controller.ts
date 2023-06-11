@@ -13,11 +13,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { isUUID } from 'class-validator';
 import { Public } from 'src/decorators';
-import {
-  StudentLoginDto,
-  StudentLoginResultDto,
-  UpdateStudentPasswordDto,
-} from '../dtos';
+import { AdminLoginDto, StudentLoginDto, UpdateStudentPasswordDto } from '../dtos';
 import { AuthService } from '../services';
 
 @Controller('auth')
@@ -28,9 +24,7 @@ export class AuthController {
   @Public()
   @Post('login')
   @ApiOperation({ summary: 'Login a student.' })
-  public async loginStudent(
-    @Body() model: StudentLoginDto
-  ): Promise<StudentLoginResultDto> {
+  public async loginStudent(@Body() model: StudentLoginDto) {
     return this.service.loginStudent(model);
   }
 
@@ -62,8 +56,8 @@ export class AuthController {
   @Put('logout')
   @ApiOperation({ summary: 'Logout a student.' })
   public async logoutStudent(@Res() res: any) {
-    console.log("here")
-    console.log(res)
+    console.log('here');
+    console.log(res);
     const { uuid } = res.req.body?.user;
 
     if (!uuid || !isUUID(uuid)) {
@@ -71,13 +65,19 @@ export class AuthController {
     }
 
     await this.service.logoutStudent(uuid);
-    return
+    return;
   }
 
-  @Get("me/verify/:token")
+  @Get('me/verify/:token')
   @ApiOperation({ summary: 'Verify a student.' })
   public async verifyStudent(@Param('token') token: string): Promise<void> {
-    console.log("hahaha")
+    console.log('hahaha');
     await this.service.verifyStudent(token);
+  }
+
+  @Post(`login/admin`)
+  @ApiOperation({ summary: "Login as an admin"})
+  public async model(@Body() model: AdminLoginDto) {
+    return await this.service.loginAdmin(model)
   }
 }

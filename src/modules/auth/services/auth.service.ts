@@ -11,8 +11,14 @@ import { JwtService } from '@nestjs/jwt';
 import { StudentDto, StudentDtoFactory } from 'src/modules/student/dtos';
 import { StudentEntity } from 'src/modules/student/entities';
 import { StudentService } from 'src/modules/student/services';
+import { SupervisorEntity } from 'src/modules/supervisor/entities';
+import { SupervisorService } from 'src/modules/supervisor/services';
 import { isPasswordCorrect } from 'src/util';
-import { StudentLoginDto, UpdateStudentPasswordDto } from '../dtos';
+import {
+  AdminLoginDto,
+  StudentLoginDto,
+  UpdateStudentPasswordDto,
+} from '../dtos';
 import { AuthFactory } from '../factories';
 @Injectable()
 export class AuthService {
@@ -22,7 +28,8 @@ export class AuthService {
     private readonly studentService: StudentService,
     private readonly factory: AuthFactory,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly supervisorService: SupervisorService
   ) {}
 
   public async loginStudent({ regNumber, password }: StudentLoginDto) {
@@ -122,8 +129,18 @@ export class AuthService {
         'uuid'
       );
     } catch (err) {
-      this.logger.error(err?.message || err)
+      this.logger.error(err?.message || err);
       throw new BadRequestException('Token expired');
     }
+  }
+
+  public async loginAdmin(model: AdminLoginDto): Promise<any> {
+    const supervisor: SupervisorEntity =
+      await this.supervisorService.findOneSupervisorOrFail(
+        model.email,
+        'email'
+      );
+    await this.comparePasswords(model.password, supervisor.password);
+    return await this.factory.generateSuccessfulLoginResult(supervisor);
   }
 }

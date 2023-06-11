@@ -8,6 +8,11 @@ import { JwtService } from '@nestjs/jwt';
 import { StudentDto, StudentDtoFactory } from 'src/modules/student/dtos';
 import { StudentEntity } from 'src/modules/student/entities';
 import { StudentService } from 'src/modules/student/services';
+import {
+  SupervisorDto,
+  SupervisorDtoFactory,
+} from 'src/modules/supervisor/dtos';
+import { SupervisorEntity } from 'src/modules/supervisor/entities';
 import { StudentLoginResultDto } from '../dtos';
 
 @Injectable()
@@ -21,9 +26,19 @@ export class AuthFactory {
   ) {}
 
   public async generateSuccessfulLoginResult(
-    model: StudentEntity
-  ): Promise<StudentLoginResultDto> {
-    const jwtPayload: StudentDto = StudentDtoFactory(model);
+    model: StudentEntity | SupervisorEntity
+  ): Promise<
+    | StudentLoginResultDto
+    | {
+        supervisor: SupervisorDto;
+        accessToken: string;
+        refreshToken: string;
+      }
+  > {
+    const jwtPayload: StudentDto | SupervisorDto =
+      model instanceof StudentEntity
+        ? StudentDtoFactory(model)
+        : SupervisorDtoFactory(model);
 
     if (!jwtPayload) {
       return;
@@ -32,17 +47,25 @@ export class AuthFactory {
     const accessToken: string = await this.generateToken(jwtPayload);
     const refreshToken: string = await this.generateToken(jwtPayload, true);
 
-    await this.updateStudentRefreshToken(refreshToken, model);
+    if (model instanceof StudentEntity) {
+      await this.updateStudentRefreshToken(refreshToken, model);
+    }
 
-    return {
-      student: jwtPayload,
-      accessToken,
-      refreshToken,
-    };
+    return jwtPayload instanceof StudentDto
+      ? {
+          student: jwtPayload,
+          accessToken,
+          refreshToken,
+        }
+      : {
+          supervisor: jwtPayload,
+          accessToken,
+          refreshToken,
+        };
   }
 
   public async generateToken(
-    payload: StudentDto,
+    payload: StudentDto | SupervisorDto,
     refreshToken = false
   ): Promise<string> {
     try {
