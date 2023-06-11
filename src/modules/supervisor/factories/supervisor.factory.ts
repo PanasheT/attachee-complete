@@ -53,6 +53,6 @@ export class SupervisorFactory {
       phone: validatedDto?.phone,
     });
 
-    return Object.assign(supervisor, { model });
+    return {...supervisor, ...validatedDto};
   }
 }
