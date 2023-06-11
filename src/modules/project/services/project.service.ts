@@ -139,4 +139,13 @@ export class ProjectService {
       throw new InternalServerErrorException('Failed to delete project');
     }
   }
+
+  public async findProjectsByStudentUUID(
+    studentUUID: string
+  ): Promise<ProjectEntity[]> {
+    return await this.repo.findBy({
+      deleted: false,
+      student: { uuid: studentUUID, deleted: false },
+    });
+  }
 }

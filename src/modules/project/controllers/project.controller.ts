@@ -116,4 +116,14 @@ export class ProjectController {
 
     await this.service.deleteProjectByUUID(uuid, studentUUID);
   }
+
+  @Get('student/:studentUUID')
+  @ApiOperation({ summary: 'Get projects by student UUID' })
+  public async findProjectsByStudentUUID(
+    @Param('studentUUID') studentUUID
+  ): Promise<ProjectDto[]> {
+    const projects: ProjectEntity[] =
+      await this.service.findProjectsByStudentUUID(studentUUID);
+    return projects.map(ProjectDtoFactory);
+  }
 }
