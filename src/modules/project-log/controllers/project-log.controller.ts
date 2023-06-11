@@ -116,4 +116,14 @@ export class ProjectLogController {
 
     return await this.service.getProjectLogCountByProjectUUID(projectUUID);
   }
+
+  @Get('student/:studentUUID')
+  @ApiOperation({ summary: 'Retrieve project logs by student UUID.' })
+  public async findProjectLogsByStudentUUID(
+    @Param('studentUUID') studentUUID: string
+  ): Promise<ProjectLogDto[]> {
+    const projectLogs: ProjectLogEntity[] =
+      await this.service.findProjectLogsByStudentUUID(studentUUID);
+    return projectLogs.map(ProjectLogDtoFactory);
+  }
 }
