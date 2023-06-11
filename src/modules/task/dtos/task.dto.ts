@@ -15,6 +15,7 @@ export class TaskDto extends PickType(TaskEntity, [
   'status',
   'title',
   'uuid',
+  'feedback'
 ] as const) {
   student: StudentDto;
   supervisor: SupervisorDto;
@@ -29,6 +30,7 @@ export function TaskDtoFactory(model: TaskEntity): TaskDto {
     priority: model.priority,
     status: model.status,
     title: model.title,
+    feedback: model?.feedback,
     uuid: model.uuid,
     student: StudentDtoFactory(model.student),
     supervisor: SupervisorDtoFactory(model.supervisor),
