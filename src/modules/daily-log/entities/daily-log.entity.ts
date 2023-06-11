@@ -23,6 +23,9 @@ export class DailyLogEntity extends AbstractEntity {
   @Column({ default: null })
   fileId: string;
 
+  @Column({ default: false })
+  isVerified: boolean;
+
   @ManyToOne(
     () => StudentEntity,
     (student: StudentEntity) => student.dailyLogs,

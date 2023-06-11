@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   CreateTaskDto,
@@ -76,5 +84,14 @@ export class TaskController {
       model
     );
     return TaskDtoFactory(task);
+  }
+
+  @Delete(':uuid/:supervisorUUID')
+  @ApiOperation({ summary: 'Delte a task as supervisor' })
+  public async deleteTaskAsSupervisor(
+    @Param('uuid') uuid: string,
+    @Param('supervisorUUID') supervisorUUID: string
+  ): Promise<void> {
+    await this.service.handleDelete(uuid, supervisorUUID);
   }
 }

@@ -124,4 +124,26 @@ export class DailyLogService {
       student: { uuid: studentUUID, deleted: false },
     });
   }
+
+  public async findAllDailyLogsByCompanyUUID(
+    companyUUID: string
+  ): Promise<DailyLogEntity[]> {
+    return await this.repo.findBy({
+      deleted: false,
+      student: {
+        company: { supervisor: { uuid: companyUUID }, deleted: false },
+        deleted: false,
+      },
+    });
+  }
+
+  //sloppy
+  public async updateDailyLogVerificationStatus(
+    isVerified: boolean,
+    uuid: string
+  ): Promise<void> {
+    const dailyLog: DailyLogEntity = await this.findOneDailyLogOrFail(uuid);
+
+    await this.repo.save({ ...dailyLog, isVerified });
+  }
 }

@@ -10,6 +10,7 @@ export class DailyLogDto extends PickType(DailyLogEntity, [
   'difficulties',
   'uuid',
   'fileId',
+  'isVerified'
 ] as const) {
   student: StudentDto;
 }
@@ -24,5 +25,6 @@ export function DailyLogDtoFactory(model: DailyLogEntity): DailyLogDto {
     uuid: model.uuid,
     student: StudentDtoFactory(model.student),
     fileId: model?.fileId || null,
+    isVerified: model.isVerified
   };
 }

@@ -86,9 +86,7 @@ export class TaskService {
       throw new NotAcceptableException('Task is already completed');
     }
 
-    return await this.handleTaskUpdate(
-      this.factory.updateTask(task, model)
-    );
+    return await this.handleTaskUpdate(this.factory.updateTask(task, model));
   }
 
   public async updateTaskAsSupervisor(
@@ -102,9 +100,7 @@ export class TaskService {
       throw new UnauthorizedException();
     }
 
-    return await this.handleTaskUpdate(
-      this.factory.updateTask(task, model)
-    );
+    return await this.handleTaskUpdate(this.factory.updateTask(task, model));
   }
 
   private async handleTaskUpdate(task: TaskEntity): Promise<TaskEntity> {
@@ -114,5 +110,18 @@ export class TaskService {
       this.logger.error(error?.message || error);
       throw new InternalServerErrorException('Failed to update task');
     }
+  }
+
+  public async handleDelete(
+    uuid: string,
+    supervisorUUID: string
+  ): Promise<void> {
+    const task: TaskEntity = await this.findOneTaskOrFail(uuid);
+
+    if (task.supervisor.uuid !== supervisorUUID) {
+      throw new UnauthorizedException();
+    }
+
+    await this.repo.save({ ...task, deleted: true });
   }
 }

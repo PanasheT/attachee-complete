@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -13,6 +14,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
+import { isUUID } from 'class-validator';
 import * as moment from 'moment';
 import * as QRCode from 'qrcode';
 import { PdfService } from 'src/modules/pdf/services/pdf.service';
@@ -144,6 +146,33 @@ export class DailyLogController {
   ): Promise<DailyLogDto[]> {
     return (await this.service.findAllDailyLogsByStudentUUID(studentUUID)).map(
       DailyLogDtoFactory
+    );
+  }
+
+  @Get('company/:companyUUID')
+  @ApiOperation({ summary: 'Find all daily logs by company UUID' })
+  public async findAllDailyLogsByCompanyUUID(
+    @Param('companyUUID') companyUUID: string
+  ): Promise<DailyLogDto[]> {
+    if (!isUUID(companyUUID)) {
+      throw new BadRequestException('Invalid uuid');
+    }
+
+    return (await this.service.findAllDailyLogsByCompanyUUID(companyUUID)).map(
+      DailyLogDtoFactory
+    );
+  }
+
+  @Patch('verify/:uuid/:isVerified')
+  @ApiOperation({ summary: 'Update the verification status of a daily log' })
+  public async updateDailyLogVerificationStatus(
+    @Param('isVerified') isVerified: boolean,
+    @Param('uuid') uuid: string
+  ): Promise<void> {
+    console.log('here')
+    return await this.service.updateDailyLogVerificationStatus(
+      isVerified,
+      uuid
     );
   }
 }
