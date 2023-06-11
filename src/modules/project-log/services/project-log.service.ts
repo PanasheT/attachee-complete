@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProjectEntity } from 'src/modules/project/entities';
@@ -131,5 +132,31 @@ export class ProjectLogService {
         student: { uuid: studentUUID, deleted: false },
       },
     });
+  }
+
+  public async deleteProjectLogByUUID(
+    uuid: string,
+    studentUUID: string
+  ): Promise<void> {
+    const projectLog: ProjectLogEntity = await this.findOneProjectLogOrFail(
+      uuid
+    );
+
+    if (projectLog.project.student.uuid !== studentUUID) {
+      throw new UnauthorizedException();
+    }
+
+    await this.handleProjectLogDelete(projectLog)
+  }
+
+  private async handleProjectLogDelete(
+    projectLog: ProjectLogEntity
+  ): Promise<void> {
+    try {
+      await this.repo.save({ ...projectLog, deleted: true });
+    } catch (err) {
+      this.logger.error(err?.message || err);
+      throw new InternalServerErrorException('Failed to delete project log');
+    }
   }
 }

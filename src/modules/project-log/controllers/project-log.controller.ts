@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -125,5 +126,15 @@ export class ProjectLogController {
     const projectLogs: ProjectLogEntity[] =
       await this.service.findProjectLogsByStudentUUID(studentUUID);
     return projectLogs.map(ProjectLogDtoFactory);
+  }
+
+  @Delete(':uuid/:studentUUID')
+  @ApiOperation({ summary: "Delete a project log by uuid"})
+  public async deleteProjectLogByUUID(@Param('uuid') uuid: string, @Param('studentUUID') studentUUID: string): Promise<void> {
+    if (!isUUID(studentUUID) || !isUUID(uuid)) {
+      throw new BadRequestException("Invalid uuid's")
+    }
+
+    await this.service.deleteProjectLogByUUID(uuid, studentUUID)
   }
 }
