@@ -159,4 +159,17 @@ export class CompanyService {
       ),
     };
   }
+
+  public async findOneCompanyBySupervisorUUID(
+    supervisorUUID: string
+  ): Promise<CompanyEntity> {
+    try {
+      return await this.repo.findOneByOrFail({
+        deleted: false,
+        supervisor: { uuid: supervisorUUID },
+      });
+    } catch (error) {
+      throw new NotFoundException('Company not found');
+    }
+  }
 }

@@ -1,5 +1,14 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { isUUID } from 'class-validator';
 import {
   CompanyDto,
   CompanyDtoFactory,
@@ -70,5 +79,19 @@ export class CompanyController {
     @Param('studentUUID') studentUUID: string
   ): Promise<void> {
     await this.service.removeStudentFromCompany(uuid, studentUUID);
+  }
+
+  @Get('supervisor/:supervisorUUID')
+  @ApiOperation({ summary: 'Find company by supervisorUUID' })
+  public async findCompanyBySupervisorUUID(
+    @Param('supervisorUUID') supervisorUUID: string
+  ): Promise<CompanyDto> {
+    if (!isUUID(supervisorUUID)) {
+      throw new BadRequestException('Invalid uuid');
+    }
+
+    const company: CompanyEntity =
+      await this.service.findOneCompanyBySupervisorUUID(supervisorUUID);
+    return CompanyDtoFactory(company);
   }
 }
