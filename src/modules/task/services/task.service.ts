@@ -5,9 +5,12 @@ import {
   Logger,
   NotAcceptableException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { TaskStatus } from 'src/modules/project-log/entities';
 import { Repository } from 'typeorm';
+import { UpdateTaskAsStudentDto } from '../dtos';
 import { TaskEntity } from '../entities';
 import { TaskStudentSupervisorType } from '../types/task.types';
 import { CreateTaskDto } from './../dtos/create-task.dto';
@@ -68,4 +71,32 @@ export class TaskService {
     }
   }
 
+  public async updateTaskAsStudent(
+    uuid: string,
+    studentUUID: string,
+    model: UpdateTaskAsStudentDto
+  ): Promise<TaskEntity> {
+    const task: TaskEntity = await this.findOneTaskOrFail(uuid);
+
+    if (task.student.uuid !== studentUUID) {
+      throw new UnauthorizedException();
+    }
+
+    if (task.status === TaskStatus.DONE) {
+      throw new NotAcceptableException('Task is already completed');
+    }
+
+    return await this.handleTaskUpdate(
+      this.factory.updateTaskAsStudent(task, model)
+    );
+  }
+
+  private async handleTaskUpdate(task: TaskEntity): Promise<TaskEntity> {
+    try {
+      return await this.repo.save(task);
+    } catch (error) {
+      this.logger.error(error?.message || error);
+      throw new InternalServerErrorException('Failed to update task');
+    }
+  }
 }

@@ -1,5 +1,9 @@
 import { PickType } from '@nestjs/swagger';
 import { StudentEntity } from '../entities';
+import {
+  CompanyDto,
+  CompanyDtoFactory,
+} from './../../company/dtos/company.dto';
 
 export class StudentDto extends PickType(StudentEntity, [
   'email',
@@ -11,7 +15,9 @@ export class StudentDto extends PickType(StudentEntity, [
   'university',
   'uuid',
   'yearOfStudy',
-] as const) {}
+] as const) {
+  company: CompanyDto;
+}
 
 export function StudentDtoFactory(model: StudentEntity): StudentDto {
   return {
@@ -24,5 +30,6 @@ export function StudentDtoFactory(model: StudentEntity): StudentDto {
     university: model.university,
     uuid: model.uuid,
     yearOfStudy: model.yearOfStudy,
+    company: !!model?.company ? CompanyDtoFactory(model.company) : null,
   };
 }

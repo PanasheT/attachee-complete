@@ -136,4 +136,14 @@ export class DailyLogController {
   public async deleteDailyLog(@Param('uuid') uuid: string): Promise<void> {
     await this.service.deleteDailyLog(uuid);
   }
+
+  @Get('student/:studentUUID')
+  @ApiOperation({ summary: 'Find all daily logs by student UUID' })
+  public async findAllDailyLogsByStudentUUID(
+    @Param('studentUUID') studentUUID: string
+  ): Promise<DailyLogDto[]> {
+    return (await this.service.findAllDailyLogsByStudentUUID(studentUUID)).map(
+      DailyLogDtoFactory
+    );
+  }
 }

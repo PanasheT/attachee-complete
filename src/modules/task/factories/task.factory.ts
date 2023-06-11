@@ -7,10 +7,14 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { StudentEntity } from 'src/modules/student/entities';
 import { StudentService } from 'src/modules/student/services';
+import { validateUpdate } from 'src/util';
 import { Repository } from 'typeorm';
 import { TaskEntity } from '../entities';
 import { CreateTaskDto } from './../dtos/create-task.dto';
-import { UpdateTaskDto } from './../dtos/update-task.dto';
+import {
+  UpdateTaskAsStudentDto,
+  UpdateTaskDto,
+} from './../dtos/update-task.dto';
 
 @Injectable()
 export class TaskFactory {
@@ -99,5 +103,10 @@ export class TaskFactory {
     }
 
     return { ...task, ...model };
+  }
+
+  public updateTaskAsStudent(task: TaskEntity, model: UpdateTaskAsStudentDto) {
+    const validatedDto = validateUpdate(task, model);
+    return { ...task, ...validatedDto };
   }
 }

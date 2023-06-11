@@ -114,4 +114,14 @@ export class DailyLogService {
 
     await this.handleDailyLogSave(dailyLog);
   }
+
+  public async findAllDailyLogsByStudentUUID(
+    studentUUID: string
+  ): Promise<DailyLogEntity[]> {
+    await this.studentService.findOneStudentOrFail(studentUUID, 'uuid');
+    return await this.repo.findBy({
+      deleted: false,
+      student: { uuid: studentUUID, deleted: false },
+    });
+  }
 }

@@ -1,6 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CreateTaskDto, TaskDto, TaskDtoFactory } from '../dtos';
+import {
+  CreateTaskDto,
+  TaskDto,
+  TaskDtoFactory,
+  UpdateTaskAsStudentDto,
+} from '../dtos';
+import { TaskEntity } from '../entities';
 import { TaskService } from '../services';
 import { TaskStudentSupervisorType } from '../types/task.types';
 
@@ -38,5 +44,20 @@ export class TaskController {
     return (await this.service.findAllStudentOrSupevisorsTasks(uuid, key)).map(
       TaskDtoFactory
     );
+  }
+
+  @Patch(':uuid/student/:studentUUID')
+  @ApiOperation({ summary: 'Update a task as a student' })
+  public async updateTaskAsStudent(
+    @Param('uuid') uuid: string,
+    @Param('studentUUID') studentUUID: string,
+    @Body() model: UpdateTaskAsStudentDto
+  ): Promise<TaskDto> {
+    const task: TaskEntity = await this.service.updateTaskAsStudent(
+      uuid,
+      studentUUID,
+      model
+    );
+    return TaskDtoFactory(task);
   }
 }

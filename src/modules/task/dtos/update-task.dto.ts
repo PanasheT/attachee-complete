@@ -16,3 +16,7 @@ export class UpdateTaskDto extends PartialType(
   @IsOptional()
   readonly feedback: string;
 }
+
+export class UpdateTaskAsStudentDto extends PartialType(
+  PickType(UpdateTaskDto, ['notes', 'status'] as const)
+) {}
