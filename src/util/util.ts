@@ -8,7 +8,7 @@ import { APIDetails, APIDetailsFactory } from 'src/common';
 
 export function validateUpdate<T>(model: T, update: Partial<T>): Partial<T> {
   const validated: Partial<T> = Object.keys(update).reduce((validated, key) => {
-    if (update[key] && model[key] !== update[key]) {
+    if (model[key] !== update[key]) {
       validated[key] = update[key];
     }
     return validated;

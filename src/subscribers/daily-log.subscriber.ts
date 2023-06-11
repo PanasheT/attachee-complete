@@ -20,6 +20,6 @@ export class DailyLogSubscriber {
 
   public async beforeInsert(event: InsertEvent<DailyLogEntity>): Promise<void> {
     const dailyLog = event.entity as DailyLogEntity;
-    await this.emitter.emitAsync(DailyLogCreatedEvent, dailyLog);
+    // await this.emitter.emitAsync(DailyLogCreatedEvent, dailyLog);
   }
 }

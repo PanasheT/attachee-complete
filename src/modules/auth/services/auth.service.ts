@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
@@ -101,6 +102,28 @@ export class AuthService {
       await this.studentService.updateStudentRefreshToken(student);
     } catch (error) {
       throw new InternalServerErrorException('Logout operation unhandled.');
+    }
+  }
+
+  public async verifyStudent(token: string) {
+    if (!token) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    try {
+      await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get<string>('TOKEN_SECRET'),
+      });
+
+      const decodedToken = this.jwtService.decode(token) as StudentDto;
+
+      return await this.studentService.findOneStudentOrFail(
+        decodedToken.uuid,
+        'uuid'
+      );
+    } catch (err) {
+      this.logger.error(err?.message || err)
+      throw new BadRequestException('Token expired');
     }
   }
 }

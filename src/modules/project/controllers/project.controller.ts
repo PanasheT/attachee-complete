@@ -1,5 +1,16 @@
-import { Body, Controller, Get, Param, Post, Put, Res } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Res,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { isUUID } from 'class-validator';
 import { Response } from 'express';
 import { PdfService } from 'src/modules/pdf/services';
 import { Readable } from 'stream';
@@ -25,6 +36,7 @@ export class ProjectController {
   public async createProject(
     @Body() model: CreateProjectDto
   ): Promise<ProjectDto> {
+    console.log('here');
     const project: ProjectEntity = await this.service.createProject(model);
     return ProjectDtoFactory(project);
   }
@@ -90,5 +102,18 @@ export class ProjectController {
     });
 
     return stream.pipe(response);
+  }
+
+  @Delete(':uuid/:studentUUID')
+  @ApiOperation({ summary: 'Delete a project by uuid and studentUUID' })
+  public async deleteProjectByUUID(
+    @Param('uuid') uuid: string,
+    @Param('studentUUID') studentUUID: string
+  ): Promise<void> {
+    if (!isUUID(studentUUID) || !isUUID(uuid)) {
+      throw new BadRequestException('Invalid uuid');
+    }
+
+    await this.service.deleteProjectByUUID(uuid, studentUUID);
   }
 }

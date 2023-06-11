@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StudentEntity } from 'src/modules/student/entities';
@@ -112,6 +113,30 @@ export class ProjectService {
       return await this.factory.updateProject(model, project);
     } catch (error) {
       throw new HttpException(error?.message, error?.status);
+    }
+  }
+
+  public async deleteProjectByUUID(
+    uuid: string,
+    studentUUID: string
+  ): Promise<void> {
+    const project: ProjectEntity = await this.findOneProjectOrFail(
+      uuid,
+      'uuid'
+    );
+
+    if (project.student.uuid !== studentUUID) {
+      throw new UnauthorizedException();
+    }
+
+    await this.handleProjectDelete(project);
+  }
+
+  private async handleProjectDelete(project: ProjectEntity): Promise<void> {
+    try {
+      await this.repo.save({ ...project, deleted: true });
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to delete project');
     }
   }
 }

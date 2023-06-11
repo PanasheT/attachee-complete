@@ -1,4 +1,5 @@
 import { PartialType, PickType } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 import { CreateTaskDto } from './create-task.dto';
 
 export class UpdateTaskDto extends PartialType(
@@ -10,4 +11,8 @@ export class UpdateTaskDto extends PartialType(
     'status',
     'title',
   ] as const)
-) {}
+) {
+  @IsString()
+  @IsOptional()
+  readonly feedback: string;
+}

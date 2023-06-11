@@ -2,7 +2,9 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   NotAcceptableException,
+  Param,
   Post,
   Put,
   Res,
@@ -59,13 +61,23 @@ export class AuthController {
 
   @Put('logout')
   @ApiOperation({ summary: 'Logout a student.' })
-  public async logoutStudent(@Res() res: any): Promise<void> {
-    const { uuid } = res.body?.user;
+  public async logoutStudent(@Res() res: any) {
+    console.log("here")
+    console.log(res)
+    const { uuid } = res.req.body?.user;
 
     if (!uuid || !isUUID(uuid)) {
       throw new BadRequestException();
     }
 
     await this.service.logoutStudent(uuid);
+    return
+  }
+
+  @Get("me/verify/:token")
+  @ApiOperation({ summary: 'Verify a student.' })
+  public async verifyStudent(@Param('token') token: string): Promise<void> {
+    console.log("hahaha")
+    await this.service.verifyStudent(token);
   }
 }

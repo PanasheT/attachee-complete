@@ -52,7 +52,7 @@ export class AuthFactory {
           secret: this.configService.get<string>('TOKEN_SECRET'),
           expiresIn: !!refreshToken
             ? this.configService.get<number>('REFRESH_TOKEN_DURATION')
-            : this.configService.get<number>('ACCESS_TOKEN_DURATION'),
+            : '10d',
         }
       );
     } catch (error) {

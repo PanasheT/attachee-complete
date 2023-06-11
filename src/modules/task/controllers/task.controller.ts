@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CreateTaskDto } from '../dtos';
-import { TaskDto, TaskDtoFactory } from '../dtos/task.dto';
+import { CreateTaskDto, TaskDto, TaskDtoFactory } from '../dtos';
 import { TaskService } from '../services';
 import { TaskStudentSupervisorType } from '../types/task.types';
 
