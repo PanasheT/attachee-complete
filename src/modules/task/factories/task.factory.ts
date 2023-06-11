@@ -85,27 +85,7 @@ export class TaskFactory {
     }
   }
 
-  //TODO: update task
-  //there are 2 types of updates, student and supervisor updates
-  public async updateTask(
-    model: UpdateTaskDto,
-    task: TaskEntity,
-    supervisorUUID: string
-  ): Promise<TaskEntity> {
-    if (new Date() > model.dueDate) {
-      throw new NotAcceptableException('Deadline must be in the future.');
-    }
-
-    if (task.supervisor.uuid !== supervisorUUID) {
-      throw new ForbiddenException(
-        'Unassociated Supervisor can not assign task.'
-      );
-    }
-
-    return { ...task, ...model };
-  }
-
-  public updateTaskAsStudent(task: TaskEntity, model: UpdateTaskAsStudentDto) {
+  public updateTask(task: TaskEntity, model: UpdateTaskAsStudentDto) {
     const validatedDto = validateUpdate(task, model);
     return { ...task, ...validatedDto };
   }

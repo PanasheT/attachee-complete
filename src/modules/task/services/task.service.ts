@@ -10,7 +10,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskStatus } from 'src/modules/project-log/entities';
 import { Repository } from 'typeorm';
-import { UpdateTaskAsStudentDto } from '../dtos';
+import { UpdateTaskAsStudentDto, UpdateTaskDto } from '../dtos';
 import { TaskEntity } from '../entities';
 import { TaskStudentSupervisorType } from '../types/task.types';
 import { CreateTaskDto } from './../dtos/create-task.dto';
@@ -87,7 +87,23 @@ export class TaskService {
     }
 
     return await this.handleTaskUpdate(
-      this.factory.updateTaskAsStudent(task, model)
+      this.factory.updateTask(task, model)
+    );
+  }
+
+  public async updateTaskAsSupervisor(
+    uuid: string,
+    supervisorUUID: string,
+    model: UpdateTaskDto
+  ): Promise<TaskEntity> {
+    const task: TaskEntity = await this.findOneTaskOrFail(uuid);
+
+    if (task.supervisor.uuid !== supervisorUUID) {
+      throw new UnauthorizedException();
+    }
+
+    return await this.handleTaskUpdate(
+      this.factory.updateTask(task, model)
     );
   }
 

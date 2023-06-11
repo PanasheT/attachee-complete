@@ -5,6 +5,7 @@ import {
   TaskDto,
   TaskDtoFactory,
   UpdateTaskAsStudentDto,
+  UpdateTaskDto,
 } from '../dtos';
 import { TaskEntity } from '../entities';
 import { TaskService } from '../services';
@@ -41,6 +42,7 @@ export class TaskController {
     @Param('uuid') uuid: string,
     @Param('key') key: TaskStudentSupervisorType
   ): Promise<TaskDto[]> {
+    console.log('here');
     return (await this.service.findAllStudentOrSupevisorsTasks(uuid, key)).map(
       TaskDtoFactory
     );
@@ -56,6 +58,21 @@ export class TaskController {
     const task: TaskEntity = await this.service.updateTaskAsStudent(
       uuid,
       studentUUID,
+      model
+    );
+    return TaskDtoFactory(task);
+  }
+
+  @Patch(':uuid/supervisor/:supervisorUUID')
+  @ApiOperation({ summary: 'Update a task as a supervisor' })
+  public async updateTaskAsSupervisor(
+    @Param('uuid') uuid: string,
+    @Param('supervisorUUID') supervisorUUID: string,
+    @Body() model: UpdateTaskDto
+  ): Promise<TaskDto> {
+    const task: TaskEntity = await this.service.updateTaskAsSupervisor(
+      uuid,
+      supervisorUUID,
       model
     );
     return TaskDtoFactory(task);

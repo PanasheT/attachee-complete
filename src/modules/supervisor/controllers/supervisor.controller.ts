@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Param,
   Patch,
 } from '@nestjs/common';
@@ -20,12 +21,23 @@ import { SupervisorService } from '../services';
 export class SupervisorController {
   constructor(private readonly service: SupervisorService) {}
 
+  @Get(':uuid')
+  @ApiOperation({ summary: 'Find supervisor by uuid' })
+  public async findOneSupervisor(
+    @Param('uuid') uuid: string
+  ): Promise<SupervisorDto> {
+    const supervisor: SupervisorEntity =
+      await this.service.findOneSupervisorOrFail(uuid, 'uuid');
+    return SupervisorDtoFactory(supervisor);
+  }
+
   @Patch(':uuid')
   @ApiOperation({ summary: 'Update a supervisor by uuid' })
   public async updateSupervisor(
     @Param('uuid') uuid: string,
     @Body() model: UpdateSupervisorDto
   ): Promise<SupervisorDto> {
+    console.log("here")
     if (!isUUID(uuid)) {
       throw new BadRequestException('Invalid uuid');
     }
