@@ -11,10 +11,7 @@ import { validateUpdate } from 'src/util';
 import { Repository } from 'typeorm';
 import { TaskEntity } from '../entities';
 import { CreateTaskDto } from './../dtos/create-task.dto';
-import {
-  UpdateTaskAsStudentDto,
-  UpdateTaskDto,
-} from './../dtos/update-task.dto';
+import { UpdateTaskAsStudentDto } from './../dtos/update-task.dto';
 
 @Injectable()
 export class TaskFactory {

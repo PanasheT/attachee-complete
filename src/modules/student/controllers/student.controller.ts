@@ -57,7 +57,7 @@ export class StudentController {
 
   @Get(':uuid/summary')
   @ApiOperation({
-    summary: 'Get a pdf summarising the details of a specific stuednt by uuid.',
+    summary: 'Get a pdf summarising the details of a specific student by uuid.',
   })
   public async getStudentDetailsPdf(
     @Param('uuid') uuid: string,

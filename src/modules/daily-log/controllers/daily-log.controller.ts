@@ -169,7 +169,7 @@ export class DailyLogController {
     @Param('isVerified') isVerified: boolean,
     @Param('uuid') uuid: string
   ): Promise<void> {
-    console.log('here')
+    console.log('here');
     return await this.service.updateDailyLogVerificationStatus(
       isVerified,
       uuid

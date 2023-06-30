@@ -13,7 +13,11 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { isUUID } from 'class-validator';
 import { Public } from 'src/decorators';
-import { AdminLoginDto, StudentLoginDto, UpdateStudentPasswordDto } from '../dtos';
+import {
+  AdminLoginDto,
+  StudentLoginDto,
+  UpdateStudentPasswordDto,
+} from '../dtos';
 import { AuthService } from '../services';
 
 @Controller('auth')
@@ -76,8 +80,8 @@ export class AuthController {
   }
 
   @Post(`login/admin`)
-  @ApiOperation({ summary: "Login as an admin"})
+  @ApiOperation({ summary: 'Login as an admin' })
   public async model(@Body() model: AdminLoginDto) {
-    return await this.service.loginAdmin(model)
+    return await this.service.loginAdmin(model);
   }
 }

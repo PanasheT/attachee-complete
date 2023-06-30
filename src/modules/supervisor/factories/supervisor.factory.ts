@@ -53,6 +53,6 @@ export class SupervisorFactory {
       phone: validatedDto?.phone,
     });
 
-    return {...supervisor, ...validatedDto};
+    return { ...supervisor, ...validatedDto };
   }
 }

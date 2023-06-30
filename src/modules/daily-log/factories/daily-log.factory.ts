@@ -103,6 +103,6 @@ export class DailyLogFactory {
       this.assertDatesAreValid(dailyLog.checkIn, checkOut);
     }
 
-    return {...dailyLog, ...validatedDto};
+    return { ...dailyLog, ...validatedDto };
   }
 }

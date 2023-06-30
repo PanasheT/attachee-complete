@@ -129,12 +129,15 @@ export class ProjectLogController {
   }
 
   @Delete(':uuid/:studentUUID')
-  @ApiOperation({ summary: "Delete a project log by uuid"})
-  public async deleteProjectLogByUUID(@Param('uuid') uuid: string, @Param('studentUUID') studentUUID: string): Promise<void> {
+  @ApiOperation({ summary: 'Delete a project log by uuid' })
+  public async deleteProjectLogByUUID(
+    @Param('uuid') uuid: string,
+    @Param('studentUUID') studentUUID: string
+  ): Promise<void> {
     if (!isUUID(studentUUID) || !isUUID(uuid)) {
-      throw new BadRequestException("Invalid uuid's")
+      throw new BadRequestException("Invalid uuid's");
     }
 
-    await this.service.deleteProjectLogByUUID(uuid, studentUUID)
+    await this.service.deleteProjectLogByUUID(uuid, studentUUID);
   }
 }

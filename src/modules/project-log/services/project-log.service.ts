@@ -146,7 +146,7 @@ export class ProjectLogService {
       throw new UnauthorizedException();
     }
 
-    await this.handleProjectLogDelete(projectLog)
+    await this.handleProjectLogDelete(projectLog);
   }
 
   private async handleProjectLogDelete(

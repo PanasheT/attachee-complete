@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { DailyLogCreatedEvent } from 'src/common';
 import { DailyLogEntity } from 'src/modules/daily-log/entities';
 import { EntityManager, InsertEvent } from 'typeorm';
 

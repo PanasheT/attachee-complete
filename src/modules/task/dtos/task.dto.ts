@@ -15,7 +15,7 @@ export class TaskDto extends PickType(TaskEntity, [
   'status',
   'title',
   'uuid',
-  'feedback'
+  'feedback',
 ] as const) {
   student: StudentDto;
   supervisor: SupervisorDto;

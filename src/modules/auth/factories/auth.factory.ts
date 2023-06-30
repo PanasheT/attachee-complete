@@ -51,14 +51,14 @@ export class AuthFactory {
       await this.updateStudentRefreshToken(refreshToken, model);
     }
 
-    return jwtPayload instanceof StudentDto
+    return model instanceof StudentEntity
       ? {
-          student: jwtPayload,
+          student: jwtPayload as StudentDto,
           accessToken,
           refreshToken,
         }
       : {
-          supervisor: jwtPayload,
+          supervisor: jwtPayload as SupervisorDto,
           accessToken,
           refreshToken,
         };
