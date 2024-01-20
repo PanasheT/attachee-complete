@@ -36,7 +36,6 @@ export class ProjectController {
   public async createProject(
     @Body() model: CreateProjectDto
   ): Promise<ProjectDto> {
-    console.log('here');
     const project: ProjectEntity = await this.service.createProject(model);
     return ProjectDtoFactory(project);
   }

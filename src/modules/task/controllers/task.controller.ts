@@ -50,7 +50,6 @@ export class TaskController {
     @Param('uuid') uuid: string,
     @Param('key') key: TaskStudentSupervisorType
   ): Promise<TaskDto[]> {
-    console.log('here');
     return (await this.service.findAllStudentOrSupevisorsTasks(uuid, key)).map(
       TaskDtoFactory
     );

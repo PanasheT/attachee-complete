@@ -37,7 +37,6 @@ export class SupervisorController {
     @Param('uuid') uuid: string,
     @Body() model: UpdateSupervisorDto
   ): Promise<SupervisorDto> {
-    console.log('here');
     if (!isUUID(uuid)) {
       throw new BadRequestException('Invalid uuid');
     }
